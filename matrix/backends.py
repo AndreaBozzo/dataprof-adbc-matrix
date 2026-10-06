@@ -33,7 +33,7 @@ def postgres_available() -> bool:
             cur.execute("SELECT 1")
             cur.fetchall()
         return True
-    except Exception:
+    except Exception:  # noqa: BLE001 - any failure means unreachable
         return False
 
 

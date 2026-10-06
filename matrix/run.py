@@ -40,7 +40,7 @@ def _profile_column(backend: str, case: Case, options: dict | None):
             arrow_type = str(rbr.schema.field(0).type)
             try:
                 report = dataprof.profile(rbr)
-            except Exception as exc:  # recorded, not hidden
+            except Exception as exc:  # noqa: BLE001 - recorded, not hidden
                 return arrow_type, None, f"{type(exc).__name__}: {exc}"
     return arrow_type, report.to_dict()["columns"][0], None
 
@@ -73,7 +73,7 @@ def run_case(backend: str, case: Case) -> dict:
     }
     try:
         arrow_type, col, err = _profile_column(backend, case, None)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         row.update(status="driver error", detail=f"{type(exc).__name__}: {exc}")
         return row
     row["arrow_type"] = arrow_type
@@ -91,7 +91,7 @@ def run_case(backend: str, case: Case) -> dict:
         _, small, small_err = _profile_column(
             backend, case, SMALL_BATCH_OPTIONS[backend]
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         small, small_err = None, f"{type(exc).__name__}: {exc}"
     if small_err:
         problems.append(f"small batches: {small_err}")
