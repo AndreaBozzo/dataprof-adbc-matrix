@@ -15,7 +15,7 @@ PG_URI = os.environ.get(
 # crosses batch boundaries. Values are strings because ADBC options are.
 SMALL_BATCH_OPTIONS = {
     "sqlite": {"adbc.sqlite.query.batch_rows": "2"},
-    "postgresql": {"adbc.postgresql.batch_size_hint_bytes": "64"},
+    "postgresql": {"adbc.postgresql.batch_size_hint_bytes": "1"},
 }
 
 

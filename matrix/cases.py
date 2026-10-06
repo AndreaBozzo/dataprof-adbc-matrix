@@ -197,8 +197,8 @@ POSTGRES: list[Case] = [
     Case(
         "all null",
         "text",
-        ["NULL", "NULL"],
-        {"null_count": 2, "total_count": 2},
+        ["NULL", "NULL", "NULL"],
+        {"null_count": 3, "total_count": 3},
     ),
     Case(
         "empty result",
@@ -265,8 +265,8 @@ SQLITE: list[Case] = [
     Case(
         "all null",
         "TEXT",
-        ["NULL", "NULL"],
-        {"null_count": 2, "total_count": 2},
+        ["NULL", "NULL", "NULL"],
+        {"null_count": 3, "total_count": 3},
     ),
     Case(
         "empty result",

@@ -5,13 +5,19 @@ A profiler must never turn a failed read into a smaller, plausible report.
 
 from __future__ import annotations
 
+import os
+
 import dataprof
 import pyarrow as pa
 import pytest
 
 from matrix.backends import connect, postgres_available, reader
 
-needs_pg = pytest.mark.skipif(not postgres_available(), reason="docker compose up -d")
+# Set DATAPROF_ADBC_REQUIRE_PG=1 to fail, not skip, when PostgreSQL is missing.
+PG_UP = postgres_available()
+if os.environ.get("DATAPROF_ADBC_REQUIRE_PG") == "1" and not PG_UP:
+    raise RuntimeError("DATAPROF_ADBC_REQUIRE_PG=1 but PostgreSQL is unreachable")
+needs_pg = pytest.mark.skipif(not PG_UP, reason="docker compose up -d")
 
 ROWS = 200_000
 SERIES = f"""
@@ -31,10 +37,18 @@ def _profile(sql: str, options: dict | None = None) -> dict:
     return d
 
 
+def _batch_rows(sql: str, options: dict | None = None) -> list[int]:
+    with connect("postgresql") as conn, conn.cursor() as cur:
+        return [b.num_rows for b in reader(cur, sql, options)]
+
+
 @needs_pg
 def test_batch_size_does_not_change_metrics():
     big = _profile(SERIES)
-    small = _profile(SERIES, {"adbc.postgresql.batch_size_hint_bytes": "4096"})
+    small_opts = {"adbc.postgresql.batch_size_hint_bytes": "4096"}
+    small = _profile(SERIES, small_opts)
+    # The comparison only means something if the driver honoured the hint.
+    assert len(_batch_rows(SERIES, small_opts)) > len(_batch_rows(SERIES))
     assert big["columns"] == small["columns"]
     assert big["quality"] == small["quality"]
     assert big["columns"][0]["total_count"] == ROWS

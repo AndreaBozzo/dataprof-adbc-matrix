@@ -3,13 +3,21 @@
 Usage: uv run python -m matrix.run [--backend sqlite|postgresql]
 
 Each case runs twice, once with the driver's default batching and once with
-tiny batches, and the two serialized column profiles must be identical.
+tiny batches, and the two serialized column profiles must be identical. The
+batch row counts the driver actually produced are recorded for both runs.
+
+A full run writes results/. Every backend must be reachable, so a missing
+PostgreSQL fails the run instead of dropping its rows. ``--backend`` runs a
+subset and only prints, so it never overwrites the full results.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import platform
+import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import dataprof
@@ -18,6 +26,14 @@ from matrix.backends import SMALL_BATCH_OPTIONS, connect, postgres_available, re
 from matrix.cases import CASES, Case
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
+
+PACKAGES = (
+    "dataprof",
+    "pyarrow",
+    "adbc-driver-manager",
+    "adbc-driver-sqlite",
+    "adbc-driver-postgresql",
+)
 
 
 def _table_sql(backend: str, case: Case) -> list[str]:
@@ -30,19 +46,27 @@ def _table_sql(backend: str, case: Case) -> list[str]:
 
 
 def _profile_column(backend: str, case: Case, options: dict | None):
+    """Profile the case column; return (arrow type, batch rows, column, error).
+
+    The query runs twice on the same table: once to record the batch row
+    counts the driver emits under ``options``, once to profile the stream.
+    """
+    sql = "SELECT v FROM t ORDER BY id"
     with connect(backend) as conn:
         with conn.cursor() as cur:
             for stmt in _table_sql(backend, case):
                 cur.execute(stmt)
             conn.commit()
         with conn.cursor() as cur:
-            rbr = reader(cur, "SELECT v FROM t ORDER BY id", options)
+            batches = [b.num_rows for b in reader(cur, sql, options)]
+        with conn.cursor() as cur:
+            rbr = reader(cur, sql, options)
             arrow_type = str(rbr.schema.field(0).type)
             try:
                 report = dataprof.profile(rbr)
             except Exception as exc:  # noqa: BLE001 - recorded, not hidden
-                return arrow_type, None, f"{type(exc).__name__}: {exc}"
-    return arrow_type, report.to_dict()["columns"][0], None
+                return arrow_type, batches, None, f"{type(exc).__name__}: {exc}"
+    return arrow_type, batches, report.to_dict()["columns"][0], None
 
 
 def _check(expect: dict, col: dict) -> list[str]:
@@ -72,11 +96,12 @@ def run_case(backend: str, case: Case) -> dict:
         "note": case.note,
     }
     try:
-        arrow_type, col, err = _profile_column(backend, case, None)
+        arrow_type, batches, col, err = _profile_column(backend, case, None)
     except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         row.update(status="driver error", detail=f"{type(exc).__name__}: {exc}")
         return row
     row["arrow_type"] = arrow_type
+    row["batches"] = {"default": batches}
     if err:
         row.update(status="profile error", detail=err)
         return row
@@ -88,38 +113,86 @@ def run_case(backend: str, case: Case) -> dict:
     problems = _check(case.expect, col)
 
     try:
-        _, small, small_err = _profile_column(
+        _, small_batches, small, small_err = _profile_column(
             backend, case, SMALL_BATCH_OPTIONS[backend]
         )
+        row["batches"]["small"] = small_batches
     except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         small, small_err = None, f"{type(exc).__name__}: {exc}"
     if small_err:
         problems.append(f"small batches: {small_err}")
-    elif small != col:
-        diff = sorted(k for k in set(col) | set(small) if col.get(k) != small.get(k))
-        msg = f"small batches change {', '.join(diff)}"
-        if case.driver_batch_variant:
-            row["batch_note"] = msg + " (driver output differs)"
-        else:
-            problems.append(msg)
+    else:
+        if len(case.values) > 1 and len(small_batches) < 2:
+            row["batch_note"] = "small-batch run was not split, so it compares nothing"
+        if small != col:
+            diff = sorted(
+                k for k in set(col) | set(small) if col.get(k) != small.get(k)
+            )
+            msg = f"small batches change {', '.join(diff)}"
+            if case.driver_batch_variant:
+                row["batch_note"] = msg + " (driver output differs)"
+            else:
+                problems.append(msg)
 
     row.update(status="ok" if not problems else "mismatch", detail="; ".join(problems))
     return row
 
 
-def _markdown(rows: list[dict]) -> str:
+def _server_version(backend: str) -> str:
+    with connect(backend) as conn:
+        return conn.adbc_get_info().get("vendor_version", "unknown")
+
+
+def environment(backends: list[str]) -> dict:
+    return {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "packages": {p: version(p) for p in PACKAGES},
+        "servers": {b: _server_version(b) for b in backends},
+    }
+
+
+def _batches_cell(r: dict) -> str:
+    b = r.get("batches") or {}
+    if "default" not in b:
+        return ""
+
+    def fmt(rows: list[int]) -> str:
+        return "+".join(map(str, rows)) or "0"
+
+    small = fmt(b["small"]) if "small" in b else "?"
+    return f"{fmt(b['default'])} / {small}"
+
+
+def _markdown(env: dict, rows: list[dict]) -> str:
+    pkgs = ", ".join(f"{k} {v}" for k, v in env["packages"].items())
+    servers = ", ".join(f"{k} {v}" for k, v in env["servers"].items())
     out = [
-        f"# ADBC matrix (dataprof {dataprof.__version__})",
+        f"# ADBC matrix (dataprof {env['packages']['dataprof']})",
         "",
-        "| backend | case | Arrow type | dataprof type | status | detail |",
-        "|---|---|---|---|---|---|",
+        f"Python {env['python']} on {env['platform']}.  ",
+        f"Packages: {pkgs}.  ",
+        f"Servers: {servers}.",
+        "",
+        (
+            "Batches: rows per batch the driver emitted, default run / small-batch "
+            "run. Notes marked (*) are caveats on an `ok` row."
+        ),
+        "",
+        "| backend | case | Arrow type | dataprof type | batches | status | detail |",
+        "|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         dtype = (r.get("observed") or {}).get("data_type", "")
-        detail = (r.get("detail") or "").replace("|", "\\|").replace("\n", " ")
+        parts = [r.get("detail") or ""]
+        if r.get("batch_note"):
+            parts.append(f"(*) {r['batch_note']}")
+        detail = "; ".join(p for p in parts if p)
+        detail = detail.replace("|", "\\|").replace("\n", " ")
+        status = r["status"] + (" (*)" if r.get("batch_note") else "")
         out.append(
             f"| {r['backend']} | {r['case']} | `{r.get('arrow_type', '')}` "
-            f"| {dtype} | {r['status']} | {detail} |"
+            f"| {dtype} | {_batches_cell(r)} | {status} | {detail} |"
         )
     return "\n".join(out) + "\n"
 
@@ -129,19 +202,25 @@ def main() -> None:
     ap.add_argument("--backend", choices=sorted(CASES))
     args = ap.parse_args()
     backends = [args.backend] if args.backend else sorted(CASES)
+    if "postgresql" in backends and not postgres_available():
+        sys.exit("postgresql unreachable (docker compose up -d); nothing written")
     rows = []
     for backend in backends:
-        if backend == "postgresql" and not postgres_available():
-            print("postgresql unreachable, skipped (docker compose up -d)")
-            continue
         rows += [run_case(backend, c) for c in CASES[backend]]
+    env = environment(backends)
+    md = _markdown(env, rows)
+    print(md)
+    if args.backend:
+        print("subset run: results/ left unchanged")
+        return
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / "matrix.json").write_text(
-        json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps({"environment": env, "rows": rows}, indent=2, ensure_ascii=False)
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
     )
-    md = _markdown(rows)
-    (RESULTS / "matrix.md").write_text(md, encoding="utf-8")
-    print(md)
+    (RESULTS / "matrix.md").write_text(md, encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":

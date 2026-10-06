@@ -24,7 +24,10 @@ uv run python -m matrix.run   # writes results/matrix.md and results/matrix.json
 uv run pytest -q              # stream behaviour: batching and mid-stream errors
 ```
 
-Without the container, the PostgreSQL rows and tests are skipped. Override the
+A full `matrix.run` needs every backend: without the container it exits with an
+error and writes nothing. `--backend sqlite` runs one backend and only prints, so
+a partial run never overwrites `results/`. The tests skip PostgreSQL when it is
+missing; set `DATAPROF_ADBC_REQUIRE_PG=1` to make that a failure. Override the
 connection with `DATAPROF_ADBC_PG_URI`.
 
 ## Method
@@ -35,6 +38,9 @@ distinct count, and whether numeric statistics may appear. Expectations follow
 dataprof's documented contract where it takes a position (for example, empty
 strings and NaN count as null). Each case runs twice, with the driver's default
 batching and with tiny batches, and the two column profiles must be identical.
+The rows per batch the driver actually emitted are recorded for both runs, and a
+small-batch run that was not split is flagged, since it compares nothing. The
+results also record the Python, package and server versions they came from.
 
 ## Results (dataprof 0.12.0, ADBC 1.x, PostgreSQL 17, SQLite)
 
