@@ -85,3 +85,5 @@ real first
 ### Environment/Setup
 
 adbc-driver-sqlite 1.12.0 (pip), pyarrow, SQLite 3.53.1, Python 3.14, Windows 11. The formatting code is unchanged on `main` at ba7e7f5.
+
+Found while building a type matrix for ADBC results: https://github.com/AndreaBozzo/dataprof-adbc-matrix (repro in `upstream/adbc-sqlite-double-to-string/`).
