@@ -42,11 +42,19 @@ The rows per batch the driver actually emitted are recorded for both runs, and a
 small-batch run that was not split is flagged, since it compares nothing. The
 results also record the Python, package and server versions they came from.
 
+Numeric cases with a `reference` are graded against exact rational arithmetic on
+the inserted literals ([matrix/reference.py](matrix/reference.py)), never against
+the database or Arrow. Each statistic is `exact` at dataprof's serialized
+precision, `f64` when it equals the true value rounded to the nearest f64, or
+`off`. Integer and decimal columns must be exact; f64 columns may differ by f64
+arithmetic up to a relative `1e-9`. The Arrow values are checked against the
+same literals, which tells driver loss from dataprof loss.
+
 ## Results (dataprof 0.12.0, ADBC 1.x, PostgreSQL 17, SQLite)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
-Works: integer widths, `bigint` above 2^53 (distinct values stay distinct),
+Works: integer widths (distinct counts stay exact above 2^53),
 `real`/`double`, `numeric` (arrives as an opaque string extension and is typed
 `float`), `boolean`, `text`, `char(n)`, `date`, `timestamp`, `timestamptz`
 (two spellings of one instant count as one value), `jsonb` (normalised by the
@@ -59,6 +67,8 @@ Findings:
 
 | finding | where it belongs |
 |---|---|
+| 64-bit integer statistics go through f64: `int64` max is reported as 2^63, and clustered large values such as epoch nanoseconds report a variance of 0, or 33% off. Arrow carries the values exactly | dataprof#877 |
+| `numeric` beyond f64 has its extrema and mean rounded to the nearest f64; distinct counts stay exact | dataprof#877 |
 | `bytea`/`BLOB` distinct count is the number of distinct byte lengths | dataprof#645 |
 | PostgreSQL `uuid` arrives as opaque 16-byte binary, so every uuid column reports one distinct value | dataprof#645 |
 | `integer[]` and other lists are refused with a clear error | dataprof nested-type work; refusal is honest |
@@ -71,4 +81,3 @@ Findings:
 
 - Memory of the whole driver-to-profiler path on a large result.
 - Other drivers: DuckDB, Snowflake, BigQuery, Flight SQL.
-- Decimal precision beyond what `f64` holds.

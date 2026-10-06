@@ -26,6 +26,10 @@ class Case:
     # The driver itself returns different values under different batching,
     # so the small-batch comparison is reported but not counted as a mismatch.
     driver_batch_variant: bool = False
+    # Grade counts and statistics against an exact reference computed from
+    # the literals (see matrix/reference.py): "exact" for integer and
+    # decimal columns, "float64" for columns that store f64.
+    reference: str = ""
 
 
 POSTGRES: list[Case] = [
@@ -59,6 +63,7 @@ POSTGRES: list[Case] = [
         ["9007199254740993", "9007199254740992", "NULL"],
         {"data_type": ["integer"], "null_count": 1, "unique_count": 2},
         "Two values that collapse to one if converted through f64.",
+        reference="exact",
     ),
     Case(
         "numeric(12,2)",
@@ -72,6 +77,46 @@ POSTGRES: list[Case] = [
             "max": 2.25,
         },
         "The PostgreSQL driver returns NUMERIC as a string column.",
+    ),
+    Case(
+        "bigint extremes",
+        "bigint",
+        ["9223372036854775807", "-9223372036854775808", "9223372036854775806", "NULL"],
+        {"data_type": ["integer"]},
+        "int64 bounds; statistics graded against exact integer arithmetic.",
+        reference="exact",
+    ),
+    Case(
+        "bigint odd above 2^53",
+        "bigint",
+        ["9007199254740993", "9007199254740995", "9007199254740997"],
+        {"data_type": ["integer"]},
+        "Odd integers no f64 can hold; exact mean is 9007199254740995.",
+        reference="exact",
+    ),
+    Case(
+        "numeric(22,2) beyond f64",
+        "numeric(22,2)",
+        ["99999999999999999999.99", "99999999999999999999.98", "0.01", "NULL"],
+        {"data_type": ["float"]},
+        "Two amounts that differ by one cent at 1e20.",
+        reference="exact",
+    ),
+    Case(
+        "numeric(38,18) fine scale",
+        "numeric(38,18)",
+        ["1", "1.000000000000000001", "0.000000000000000001"],
+        {"data_type": ["float"]},
+        "Values that differ below f64 resolution near 1.",
+        reference="exact",
+    ),
+    Case(
+        "double large magnitude",
+        "double precision",
+        ["1e308", "1e308", "-1e308"],
+        {"data_type": ["float"]},
+        "The sum overflows f64; the variance does not fit, the mean must.",
+        reference="float64",
     ),
     Case(
         "real",
@@ -220,6 +265,14 @@ SQLITE: list[Case] = [
             "min": 1.0,
             "max": 2.0,
         },
+    ),
+    Case(
+        "INTEGER extremes",
+        "INTEGER",
+        ["9223372036854775807", "-9223372036854775808", "9223372036854775806", "NULL"],
+        {"data_type": ["integer"]},
+        "int64 bounds; statistics graded against exact integer arithmetic.",
+        reference="exact",
     ),
     Case(
         "REAL",

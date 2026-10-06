@@ -127,8 +127,16 @@
           "coefficient_of_variation": 0.0
         }
       },
-      "status": "ok",
-      "detail": ""
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "status": "mismatch",
+      "detail": "max 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; mean 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; median 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; variance 0 vs exact 0.5 (rel 1.0e+00); std_dev 0 vs exact 0.7071 (rel 1.0e+00)"
     },
     {
       "backend": "postgresql",
@@ -163,6 +171,226 @@
           "skewness": -0.3849,
           "coefficient_of_variation": 35.57
         }
+      },
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "postgresql",
+      "case": "bigint extremes",
+      "sql_type": "bigint",
+      "note": "int64 bounds; statistics graded against exact integer arithmetic.",
+      "arrow_type": "int64",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": -9.223372036854776e+18,
+          "max": 9.223372036854776e+18,
+          "mean": 3.0744573456182584e+18,
+          "std_dev": 1.0650232656628345e+19,
+          "variance": 1.1342745564031283e+38,
+          "median": 9.223372036854776e+18,
+          "mode": 9.223372036854776e+18,
+          "skewness": -0.3849,
+          "coefficient_of_variation": 346.41
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "status": "mismatch",
+      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
+    },
+    {
+      "backend": "postgresql",
+      "case": "bigint odd above 2^53",
+      "sql_type": "bigint",
+      "note": "Odd integers no f64 can hold; exact mean is 9007199254740995.",
+      "arrow_type": "int64",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          1,
+          1,
+          1
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 3,
+        "null_count": 0,
+        "unique_count": 3,
+        "stats": {
+          "min": 9007199254740992.0,
+          "max": 9007199254740996.0,
+          "mean": 9007199254740994.0,
+          "std_dev": 2.3094,
+          "variance": 5.3333,
+          "median": 9007199254740996.0,
+          "mode": 9007199254740996.0,
+          "skewness": 0.2165,
+          "coefficient_of_variation": 0.0
+        }
+      },
+      "reference_grades": {
+        "min": "f64",
+        "max": "f64",
+        "mean": "off",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "status": "mismatch",
+      "detail": "min 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; max 9007199254740996 vs exact 9007199254740997 (rel 1.1e-16) nearest f64; mean 9007199254740994 vs exact 9007199254740995 (rel 1.1e-16); median 9007199254740996 vs exact 9007199254740995 (rel 1.1e-16) nearest f64; variance 5.3333 vs exact 4 (rel 3.3e-01); std_dev 2.3094 vs exact 2 (rel 1.5e-01)"
+    },
+    {
+      "backend": "postgresql",
+      "case": "numeric(22,2) beyond f64",
+      "sql_type": "numeric(22,2)",
+      "note": "Two amounts that differ by one cent at 1e20.",
+      "arrow_type": "extension<arrow.opaque[storage_type=string, type_name=numeric, vendor_name=PostgreSQL]>",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": 0.01,
+          "max": 1e+20,
+          "mean": 6.666666666666666e+19,
+          "std_dev": 5.773502691896258e+19,
+          "variance": 3.3333333333333336e+39,
+          "median": 1e+20,
+          "mode": 1e+20,
+          "skewness": -0.3849,
+          "coefficient_of_variation": 86.6
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "f64"
+      },
+      "status": "mismatch",
+      "detail": "max 100000000000000000000 vs exact 99999999999999999999.99 (rel 1.0e-22) nearest f64; mean 66666666666666663936 vs exact 66666666666666666666.66 (rel 4.1e-17) nearest f64; median 100000000000000000000 vs exact 99999999999999999999.98 (rel 2.0e-22) nearest f64; variance 3333333333333333636082979411000000000000 vs exact 3333333333333333333331666667000000000000 (rel 9.1e-17); std_dev 57735026918962577408 vs exact 57735026918962576450.9004 (rel 1.7e-17) nearest f64"
+    },
+    {
+      "backend": "postgresql",
+      "case": "numeric(38,18) fine scale",
+      "sql_type": "numeric(38,18)",
+      "note": "Values that differ below f64 resolution near 1.",
+      "arrow_type": "extension<arrow.opaque[storage_type=string, type_name=numeric, vendor_name=PostgreSQL]>",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          1,
+          1,
+          1
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 3,
+        "null_count": 0,
+        "unique_count": 3,
+        "stats": {
+          "min": 0.0,
+          "max": 1.0,
+          "mean": 0.6667,
+          "std_dev": 0.5774,
+          "variance": 0.3333,
+          "median": 1.0,
+          "mode": 1.0,
+          "skewness": -0.3849,
+          "coefficient_of_variation": 86.6
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
+      },
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "postgresql",
+      "case": "double large magnitude",
+      "sql_type": "double precision",
+      "note": "The sum overflows f64; the variance does not fit, the mean must.",
+      "arrow_type": "double",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          1,
+          1,
+          1
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 3,
+        "null_count": 0,
+        "unique_count": 2,
+        "stats": {
+          "min": -1e+308,
+          "max": 1e+308,
+          "mean": 3.333333333333333e+307,
+          "std_dev": null,
+          "variance": null,
+          "median": 1e+308,
+          "mode": 1e+308
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "exact",
+        "mean": "f64",
+        "median": "exact",
+        "variance": "f64",
+        "std_dev": "documented"
       },
       "status": "ok",
       "detail": ""
@@ -657,6 +885,49 @@
       },
       "status": "ok",
       "detail": ""
+    },
+    {
+      "backend": "sqlite",
+      "case": "INTEGER extremes",
+      "sql_type": "INTEGER",
+      "note": "int64 bounds; statistics graded against exact integer arithmetic.",
+      "arrow_type": "int64",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          2,
+          2
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": -9.223372036854776e+18,
+          "max": 9.223372036854776e+18,
+          "mean": 3.0744573456182584e+18,
+          "std_dev": 1.0650232656628345e+19,
+          "variance": 1.1342745564031283e+38,
+          "median": 9.223372036854776e+18,
+          "mode": 9.223372036854776e+18,
+          "skewness": -0.3849,
+          "coefficient_of_variation": 346.41
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "status": "mismatch",
+      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
     },
     {
       "backend": "sqlite",

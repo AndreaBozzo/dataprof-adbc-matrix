@@ -22,9 +22,11 @@ from pathlib import Path
 
 import dataprof
 
+from matrix import reference
 from matrix.backends import SMALL_BATCH_OPTIONS, connect, postgres_available, reader
 from matrix.cases import CASES, Case
 
+FLOAT64_RTOL = 1e-9
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 
 PACKAGES = (
@@ -46,10 +48,10 @@ def _table_sql(backend: str, case: Case) -> list[str]:
 
 
 def _profile_column(backend: str, case: Case, options: dict | None):
-    """Profile the case column; return (arrow type, batch rows, column, error).
+    """Profile the case column; return (arrow type, batches, column, error).
 
-    The query runs twice on the same table: once to record the batch row
-    counts the driver emits under ``options``, once to profile the stream.
+    The query runs twice on the same table: once to keep the batches the
+    driver emits under ``options``, once to profile the stream.
     """
     sql = "SELECT v FROM t ORDER BY id"
     with connect(backend) as conn:
@@ -58,7 +60,7 @@ def _profile_column(backend: str, case: Case, options: dict | None):
                 cur.execute(stmt)
             conn.commit()
         with conn.cursor() as cur:
-            batches = [b.num_rows for b in reader(cur, sql, options)]
+            batches = list(reader(cur, sql, options))
         with conn.cursor() as cur:
             rbr = reader(cur, sql, options)
             arrow_type = str(rbr.schema.field(0).type)
@@ -88,8 +90,48 @@ def _check(expect: dict, col: dict) -> list[str]:
     return problems
 
 
+def _check_reference(row: dict, case: Case, batches: list, col: dict) -> list[str]:
+    """Grade counts and statistics against the exact reference of the literals.
+
+    An exact-typed column (integer, decimal) must match the true value. An f64
+    column may differ from it by f64 arithmetic: relative error up to
+    FLOAT64_RTOL, the raw-value tolerance of dataprof's parity tests.
+    """
+    parsed = [reference.parse(v, case.reference) for v in case.values]
+    present = [v for v in parsed if v is not None]
+    problems = []
+    lost = reference.arrow_loss(
+        case.values, case.reference, reference.arrow_values(batches)
+    )
+    if lost:
+        problems.append("driver changed values: " + ", ".join(lost))
+    counts = {
+        "total_count": len(parsed),
+        "null_count": len(parsed) - len(present),
+        "unique_count": len(set(present)),
+    }
+    for key, want in counts.items():
+        if col.get(key) != want:
+            problems.append(f"{key} {col.get(key)} vs exact {want}")
+    stats = col.get("stats") or {}
+    grades = {}
+    exact_stats = reference.statistics(present)
+    # Documented: std_dev is null whenever the variance overflows f64.
+    variance_overflows = not reference.fits_f64(exact_stats["variance"])
+    for name, exact in exact_stats.items():
+        null_ok = name == "std_dev" and variance_overflows
+        grade, detail, rel = reference.grade(name, exact, stats.get(name), null_ok)
+        grades[name] = grade
+        if not detail:
+            continue
+        if case.reference != "float64" or rel > FLOAT64_RTOL:
+            problems.append(detail)
+    row["reference_grades"] = grades
+    return problems
+
+
 def run_case(backend: str, case: Case) -> dict:
-    row = {
+    row: dict = {
         "backend": backend,
         "case": case.name,
         "sql_type": case.sql_type,
@@ -101,7 +143,7 @@ def run_case(backend: str, case: Case) -> dict:
         row.update(status="driver error", detail=f"{type(exc).__name__}: {exc}")
         return row
     row["arrow_type"] = arrow_type
-    row["batches"] = {"default": batches}
+    row["batches"] = {"default": [b.num_rows for b in batches]}
     if err:
         row.update(status="profile error", detail=err)
         return row
@@ -111,12 +153,14 @@ def run_case(backend: str, case: Case) -> dict:
     }
     row["observed"]["stats"] = col.get("stats")
     problems = _check(case.expect, col)
+    if case.reference:
+        problems += _check_reference(row, case, batches, col)
 
     try:
         _, small_batches, small, small_err = _profile_column(
             backend, case, SMALL_BATCH_OPTIONS[backend]
         )
-        row["batches"]["small"] = small_batches
+        row["batches"]["small"] = [b.num_rows for b in small_batches]
     except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         small, small_err = None, f"{type(exc).__name__}: {exc}"
     if small_err:
