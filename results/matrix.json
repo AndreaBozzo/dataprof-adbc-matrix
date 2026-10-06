@@ -1,0 +1,571 @@
+[
+  {
+    "backend": "postgresql",
+    "case": "smallint",
+    "sql_type": "smallint",
+    "note": "",
+    "arrow_type": "int16",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 5,
+      "null_count": 1,
+      "unique_count": 3,
+      "stats": {
+        "min": -32768.0,
+        "max": 2.0,
+        "mean": -8190.75,
+        "std_dev": 16384.8333,
+        "variance": 268462763.5833,
+        "median": 1.5,
+        "mode": 2.0,
+        "skewness": -0.75,
+        "kurtosis": -1.6875,
+        "coefficient_of_variation": 200.04,
+        "quartiles": {
+          "q1": -8191.25,
+          "q2": 1.5,
+          "q3": 2.0,
+          "iqr": 8193.25
+        },
+        "outlier_count": 1
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "integer",
+    "sql_type": "integer",
+    "note": "",
+    "arrow_type": "int32",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 10.0,
+        "max": 20.0,
+        "mean": 15.0,
+        "std_dev": 7.0711,
+        "variance": 50.0,
+        "median": 15.0,
+        "coefficient_of_variation": 47.14
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "bigint above 2^53",
+    "sql_type": "bigint",
+    "note": "Two values that collapse to one if converted through f64.",
+    "arrow_type": "int64",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 9007199254740992.0,
+        "max": 9007199254740992.0,
+        "mean": 9007199254740992.0,
+        "std_dev": 0.0,
+        "variance": 0.0,
+        "median": 9007199254740992.0,
+        "mode": 9007199254740992.0,
+        "coefficient_of_variation": 0.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "numeric(12,2)",
+    "sql_type": "numeric(12,2)",
+    "note": "The PostgreSQL driver returns NUMERIC as a string column.",
+    "arrow_type": "extension<arrow.opaque[storage_type=string, type_name=numeric, vendor_name=PostgreSQL]>",
+    "observed": {
+      "data_type": "float",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 1.1,
+        "max": 2.25,
+        "mean": 1.8667,
+        "std_dev": 0.664,
+        "variance": 0.4408,
+        "median": 2.25,
+        "mode": 2.25,
+        "skewness": -0.3849,
+        "coefficient_of_variation": 35.57
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "real",
+    "sql_type": "real",
+    "note": "",
+    "arrow_type": "float",
+    "observed": {
+      "data_type": "float",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 1.5,
+        "max": 2.5,
+        "mean": 2.0,
+        "std_dev": 0.7071,
+        "variance": 0.5,
+        "median": 2.0,
+        "coefficient_of_variation": 35.36
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "double with NaN/Infinity",
+    "sql_type": "double precision",
+    "note": "dataprof counts NaN as null (documented null_tokens policy).",
+    "arrow_type": "double",
+    "observed": {
+      "data_type": "float",
+      "total_count": 4,
+      "null_count": 2,
+      "unique_count": 2,
+      "stats": {
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "std_dev": 0.0,
+        "variance": 0.0,
+        "median": 1.0,
+        "coefficient_of_variation": 0.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "boolean",
+    "sql_type": "boolean",
+    "note": "",
+    "arrow_type": "bool",
+    "observed": {
+      "data_type": "boolean",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "true_count": 2,
+        "false_count": 1,
+        "true_ratio": 0.6667
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "text",
+    "sql_type": "text",
+    "note": "The database keeps '' apart from NULL; dataprof counts it as null (documented null_tokens policy, opt-out would be dataprof#846).",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "string",
+      "total_count": 5,
+      "null_count": 2,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 1,
+        "max_length": 1,
+        "avg_length": 1.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "char(3)",
+    "sql_type": "char(3)",
+    "note": "",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "string",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 3,
+        "max_length": 3,
+        "avg_length": 3.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "date",
+    "sql_type": "date",
+    "note": "",
+    "arrow_type": "date32[day]",
+    "observed": {
+      "data_type": "date",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "timestamp",
+    "sql_type": "timestamp",
+    "note": "",
+    "arrow_type": "timestamp[us]",
+    "observed": {
+      "data_type": "date",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "timestamptz same instant",
+    "sql_type": "timestamptz",
+    "note": "Both literals are the same instant.",
+    "arrow_type": "timestamp[us, tz=UTC]",
+    "observed": {
+      "data_type": "date",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 1,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "time",
+    "sql_type": "time",
+    "note": "",
+    "arrow_type": "time64[us]",
+    "observed": {
+      "data_type": "string",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 8,
+        "max_length": 8,
+        "avg_length": 8.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "interval",
+    "sql_type": "interval",
+    "note": "",
+    "arrow_type": "month_day_nano_interval",
+    "observed": {
+      "data_type": "string",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 6,
+        "max_length": 7,
+        "avg_length": 6.5
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "uuid",
+    "sql_type": "uuid",
+    "note": "",
+    "arrow_type": "extension<arrow.opaque[storage_type=binary, type_name=uuid, vendor_name=PostgreSQL]>",
+    "observed": {
+      "data_type": "string",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 1,
+      "stats": {
+        "min_length": 11,
+        "max_length": 11,
+        "avg_length": 11.0
+      }
+    },
+    "status": "mismatch",
+    "detail": "unique_count 1 != 2"
+  },
+  {
+    "backend": "postgresql",
+    "case": "bytea same length",
+    "sql_type": "bytea",
+    "note": "Two distinct one-byte values. Tracked in dataprof#645.",
+    "arrow_type": "binary",
+    "observed": {
+      "data_type": "string",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 10,
+        "max_length": 10,
+        "avg_length": 10.0
+      }
+    },
+    "status": "mismatch",
+    "detail": "unique_count 2 != 3"
+  },
+  {
+    "backend": "postgresql",
+    "case": "jsonb",
+    "sql_type": "jsonb",
+    "note": "jsonb normalises both literals to the same value.",
+    "arrow_type": "extension<arrow.json>",
+    "observed": {
+      "data_type": "string",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 1,
+      "stats": {
+        "min_length": 8,
+        "max_length": 8,
+        "avg_length": 8.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "integer[]",
+    "sql_type": "integer[]",
+    "note": "",
+    "arrow_type": "list<item: int32>",
+    "status": "profile error",
+    "detail": "TypeError: Arrow stream column 'v' has unsupported nested type List(Int32); select flat columns before exporting the stream"
+  },
+  {
+    "backend": "postgresql",
+    "case": "all null",
+    "sql_type": "text",
+    "note": "",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "string",
+      "total_count": 2,
+      "null_count": 2,
+      "unique_count": 0,
+      "stats": {
+        "min_length": 0,
+        "max_length": 0,
+        "avg_length": 0.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "postgresql",
+    "case": "empty result",
+    "sql_type": "integer",
+    "note": "",
+    "arrow_type": "int32",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 0,
+      "null_count": 0,
+      "unique_count": 0,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "INTEGER",
+    "sql_type": "INTEGER",
+    "note": "",
+    "arrow_type": "int64",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 1.0,
+        "max": 2.0,
+        "mean": 1.6667,
+        "std_dev": 0.5774,
+        "variance": 0.3333,
+        "median": 2.0,
+        "mode": 2.0,
+        "skewness": -0.3849,
+        "coefficient_of_variation": 34.64
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "REAL",
+    "sql_type": "REAL",
+    "note": "",
+    "arrow_type": "double",
+    "observed": {
+      "data_type": "float",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min": 1.5,
+        "max": 2.5,
+        "mean": 2.0,
+        "std_dev": 0.7071,
+        "variance": 0.5,
+        "median": 2.0,
+        "coefficient_of_variation": 35.36
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "TEXT",
+    "sql_type": "TEXT",
+    "note": "Empty string counted as null, as for PostgreSQL text.",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "string",
+      "total_count": 5,
+      "null_count": 2,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 1,
+        "max_length": 1,
+        "avg_length": 1.0
+      }
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "TEXT ISO dates",
+    "sql_type": "TEXT",
+    "note": "",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "date",
+      "total_count": 3,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "BLOB same length",
+    "sql_type": "BLOB",
+    "note": "Two distinct one-byte values. Tracked in dataprof#645.",
+    "arrow_type": "binary",
+    "observed": {
+      "data_type": "string",
+      "total_count": 4,
+      "null_count": 1,
+      "unique_count": 2,
+      "stats": {
+        "min_length": 10,
+        "max_length": 10,
+        "avg_length": 10.0
+      }
+    },
+    "status": "mismatch",
+    "detail": "unique_count 2 != 3"
+  },
+  {
+    "backend": "sqlite",
+    "case": "mixed storage classes",
+    "sql_type": "",
+    "note": "SQLite is dynamically typed. The driver renders 2.5 as 2.500000e+00 when it shares a batch with text, so batching changes the strings.",
+    "arrow_type": "string",
+    "observed": {
+      "data_type": "string",
+      "total_count": 3,
+      "null_count": 0,
+      "unique_count": 3,
+      "stats": {
+        "min_length": 1,
+        "max_length": 12,
+        "avg_length": 4.6667
+      }
+    },
+    "batch_note": "small batches change patterns, stats (driver output differs)",
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "all null",
+    "sql_type": "TEXT",
+    "note": "",
+    "arrow_type": "int64",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 2,
+      "null_count": 2,
+      "unique_count": 0,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  },
+  {
+    "backend": "sqlite",
+    "case": "empty result",
+    "sql_type": "INTEGER",
+    "note": "",
+    "arrow_type": "int64",
+    "observed": {
+      "data_type": "integer",
+      "total_count": 0,
+      "null_count": 0,
+      "unique_count": 0,
+      "stats": null
+    },
+    "status": "ok",
+    "detail": ""
+  }
+]

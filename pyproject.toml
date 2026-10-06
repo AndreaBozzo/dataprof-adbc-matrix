@@ -1,0 +1,19 @@
+[project]
+name = "dataprof-adbc-matrix"
+version = "0.1.0"
+description = "Compatibility matrix: profiling database query results with dataprof through ADBC"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "dataprof==0.12.0",
+    "pyarrow>=18",
+    "adbc-driver-manager>=1.3",
+    "adbc-driver-sqlite>=1.3",
+    "adbc-driver-postgresql>=1.3",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.uv]
+package = false
