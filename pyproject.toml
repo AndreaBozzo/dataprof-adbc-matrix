@@ -14,7 +14,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = [
+    "psutil>=7.2.2",
+    "pytest>=8",
+    "ruff>=0.6",
+]
 
 [tool.uv]
 package = false

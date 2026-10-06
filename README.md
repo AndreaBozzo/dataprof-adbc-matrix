@@ -22,6 +22,7 @@ docker compose up -d          # PostgreSQL 17 on localhost:54329
 uv sync
 uv run python -m matrix.run   # writes results/matrix.md and results/matrix.json
 uv run pytest -q              # stream behaviour: batching and mid-stream errors
+uv run python -m matrix.memory  # peak memory per result size, results/memory.md
 ```
 
 A full `matrix.run` needs every backend: without the container it exits with an
@@ -63,6 +64,13 @@ rows of mixed types. A server error partway through the stream raises, with the
 driver message kept as the exception cause, so a failed read never becomes a
 smaller report.
 
+Memory is bounded ([results/memory.md](results/memory.md)). Profiling the
+driver's stream peaks at about 60 MiB over baseline from 1 to 16 million rows,
+with a unique `id` column, while draining the stream alone takes about 20 MiB
+and materializing an Arrow table first grows from 84 to 481 MiB. Profiling is
+about 3.7 times the drain time, so dataprof, not the driver, sets throughput
+(about 0.5 million rows per second for five columns on this machine).
+
 Findings:
 
 | finding | where it belongs |
@@ -79,5 +87,4 @@ Findings:
 
 ## Not yet measured
 
-- Memory of the whole driver-to-profiler path on a large result.
 - Other drivers: DuckDB, Snowflake, BigQuery, Flight SQL.

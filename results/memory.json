@@ -1,0 +1,87 @@
+{
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "packages": {
+      "dataprof": "0.12.0",
+      "pyarrow": "25.0.1",
+      "adbc-driver-manager": "1.12.0",
+      "adbc-driver-sqlite": "1.12.0",
+      "adbc-driver-postgresql": "1.12.0"
+    }
+  },
+  "results": [
+    {
+      "rows": 1000000,
+      "mode": "drain",
+      "batches": 3,
+      "baseline_mib": 51.0,
+      "peak_over_baseline_mib": 19.0,
+      "seconds": 0.9
+    },
+    {
+      "rows": 1000000,
+      "mode": "profile",
+      "batches": null,
+      "baseline_mib": 50.9,
+      "peak_over_baseline_mib": 64.8,
+      "seconds": 2.67
+    },
+    {
+      "rows": 1000000,
+      "mode": "table",
+      "batches": 3,
+      "baseline_mib": 50.8,
+      "peak_over_baseline_mib": 84.0,
+      "seconds": 3.3
+    },
+    {
+      "rows": 4000000,
+      "mode": "drain",
+      "batches": 11,
+      "baseline_mib": 50.8,
+      "peak_over_baseline_mib": 20.4,
+      "seconds": 2.8
+    },
+    {
+      "rows": 4000000,
+      "mode": "profile",
+      "batches": null,
+      "baseline_mib": 50.9,
+      "peak_over_baseline_mib": 57.8,
+      "seconds": 9.66
+    },
+    {
+      "rows": 4000000,
+      "mode": "table",
+      "batches": 11,
+      "baseline_mib": 50.8,
+      "peak_over_baseline_mib": 155.3,
+      "seconds": 9.9
+    },
+    {
+      "rows": 16000000,
+      "mode": "drain",
+      "batches": 44,
+      "baseline_mib": 50.9,
+      "peak_over_baseline_mib": 20.6,
+      "seconds": 8.84
+    },
+    {
+      "rows": 16000000,
+      "mode": "profile",
+      "batches": null,
+      "baseline_mib": 51.2,
+      "peak_over_baseline_mib": 58.0,
+      "seconds": 32.88
+    },
+    {
+      "rows": 16000000,
+      "mode": "table",
+      "batches": 44,
+      "baseline_mib": 50.8,
+      "peak_over_baseline_mib": 481.3,
+      "seconds": 36.54
+    }
+  ]
+}
