@@ -59,7 +59,7 @@ Findings:
 | `''` and NaN count as null, while the database distinguishes them from `NULL` | documented policy; an opt-out would be dataprof#846 |
 | `time` and `interval` profile as `string` | no dataprof type for them; counts are right |
 | The top-level stream error reads `Arrow stream batch failed (error code 22)`; the useful text is only in `__cause__` | dataprof#876 |
-| SQLite driver formats `REAL` values with `%e` while inferring a string column, so `123456789.123` becomes `1.234568e+08`; later batches keep full text | adbc-driver-sqlite, see [upstream/](upstream/adbc-sqlite-double-to-string/ISSUE.md) |
+| SQLite driver formats `REAL` values with `%e` while inferring a string column, so `123456789.123` becomes `1.234568e+08`; later batches keep full text | apache/arrow-adbc#4862, repro in [upstream/](upstream/adbc-sqlite-double-to-string/) |
 
 ## Not yet measured
 
