@@ -22,6 +22,7 @@ docker compose up -d          # PostgreSQL 17 on localhost:54329
 uv sync
 uv run python -m matrix.run   # writes results/matrix.md and results/matrix.json
 uv run pytest -q              # stream behaviour: batching and mid-stream errors
+uv run ruff format --check . && uv run ruff check . && uv run ty check
 uv run python -m matrix.memory  # peak memory per result size, results/memory.md
 ```
 

@@ -40,7 +40,7 @@ FROM generate_series(1, {rows}) g
 def _peak_bytes(proc) -> int:
     info = proc.memory_info()
     # Windows reports the peak working set; elsewhere use ru_maxrss.
-    if hasattr(info, "peak_wset"):
+    if sys.platform == "win32":
         return info.peak_wset
     import resource
 

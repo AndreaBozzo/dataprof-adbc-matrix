@@ -163,7 +163,7 @@ def run_case(backend: str, case: Case) -> dict:
         row["batches"]["small"] = [b.num_rows for b in small_batches]
     except Exception as exc:  # noqa: BLE001 - recorded in the matrix
         small, small_err = None, f"{type(exc).__name__}: {exc}"
-    if small_err:
+    if small_err or small is None:  # small is None exactly when small_err is set
         problems.append(f"small batches: {small_err}")
     else:
         if len(case.values) > 1 and len(small_batches) < 2:
