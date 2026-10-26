@@ -3,7 +3,7 @@
     "python": "3.14.6",
     "platform": "Windows-11-10.0.26300-SP0",
     "packages": {
-      "dataprof": "0.12.0",
+      "dataprof": "0.13.0",
       "pyarrow": "25.0.1",
       "adbc-driver-manager": "1.12.0",
       "adbc-driver-sqlite": "1.12.0",
@@ -46,8 +46,8 @@
           "variance": 268462763.5833,
           "median": 1.5,
           "mode": 2.0,
-          "skewness": -0.75,
-          "kurtosis": -1.6875,
+          "skewness": -2.0,
+          "kurtosis": 4.0,
           "coefficient_of_variation": 200.04,
           "quartiles": {
             "q1": -8191.25,
@@ -55,6 +55,7 @@
             "q3": 2.0,
             "iqr": 8193.25
           },
+          "is_approximate": false,
           "outlier_count": 1
         }
       },
@@ -89,7 +90,8 @@
           "std_dev": 7.0711,
           "variance": 50.0,
           "median": 15.0,
-          "coefficient_of_variation": 47.14
+          "coefficient_of_variation": 47.14,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -120,11 +122,12 @@
           "min": 9007199254740992.0,
           "max": 9007199254740992.0,
           "mean": 9007199254740992.0,
-          "std_dev": 0.0,
-          "variance": 0.0,
+          "std_dev": 0.7071,
+          "variance": 0.5,
           "median": 9007199254740992.0,
           "mode": 9007199254740992.0,
-          "coefficient_of_variation": 0.0
+          "coefficient_of_variation": 0.0,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -132,11 +135,11 @@
         "max": "f64",
         "mean": "f64",
         "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "status": "mismatch",
-      "detail": "max 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; mean 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; median 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; variance 0 vs exact 0.5 (rel 1.0e+00); std_dev 0 vs exact 0.7071 (rel 1.0e+00)"
+      "detail": "max 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; mean 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; median 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64"
     },
     {
       "backend": "postgresql",
@@ -168,8 +171,9 @@
           "variance": 0.4408,
           "median": 2.25,
           "mode": 2.25,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 35.57
+          "skewness": -1.7321,
+          "coefficient_of_variation": 35.57,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -205,8 +209,9 @@
           "variance": 1.1342745564031283e+38,
           "median": 9.223372036854776e+18,
           "mode": 9.223372036854776e+18,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 346.41
+          "skewness": -1.7321,
+          "coefficient_of_variation": 346.41,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -245,12 +250,13 @@
           "min": 9007199254740992.0,
           "max": 9007199254740996.0,
           "mean": 9007199254740994.0,
-          "std_dev": 2.3094,
-          "variance": 5.3333,
+          "std_dev": 2.0,
+          "variance": 4.0,
           "median": 9007199254740996.0,
           "mode": 9007199254740996.0,
-          "skewness": 0.2165,
-          "coefficient_of_variation": 0.0
+          "skewness": 0.0,
+          "coefficient_of_variation": 0.0,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -258,11 +264,11 @@
         "max": "f64",
         "mean": "off",
         "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "status": "mismatch",
-      "detail": "min 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; max 9007199254740996 vs exact 9007199254740997 (rel 1.1e-16) nearest f64; mean 9007199254740994 vs exact 9007199254740995 (rel 1.1e-16); median 9007199254740996 vs exact 9007199254740995 (rel 1.1e-16) nearest f64; variance 5.3333 vs exact 4 (rel 3.3e-01); std_dev 2.3094 vs exact 2 (rel 1.5e-01)"
+      "detail": "min 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; max 9007199254740996 vs exact 9007199254740997 (rel 1.1e-16) nearest f64; mean 9007199254740994 vs exact 9007199254740995 (rel 1.1e-16); median 9007199254740996 vs exact 9007199254740995 (rel 1.1e-16) nearest f64"
     },
     {
       "backend": "postgresql",
@@ -294,8 +300,9 @@
           "variance": 3.3333333333333336e+39,
           "median": 1e+20,
           "mode": 1e+20,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 86.6
+          "skewness": -1.7321,
+          "coefficient_of_variation": 86.6,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -338,8 +345,9 @@
           "variance": 0.3333,
           "median": 1.0,
           "mode": 1.0,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 86.6
+          "skewness": -1.7321,
+          "coefficient_of_variation": 86.6,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -381,7 +389,8 @@
           "std_dev": null,
           "variance": null,
           "median": 1e+308,
-          "mode": 1e+308
+          "mode": 1e+308,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -423,7 +432,8 @@
           "std_dev": 0.7071,
           "variance": 0.5,
           "median": 2.0,
-          "coefficient_of_variation": 35.36
+          "coefficient_of_variation": 35.36,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -458,7 +468,8 @@
           "std_dev": 0.0,
           "variance": 0.0,
           "median": 1.0,
-          "coefficient_of_variation": 0.0
+          "coefficient_of_variation": 0.0,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -716,15 +727,11 @@
         "data_type": "string",
         "total_count": 4,
         "null_count": 1,
-        "unique_count": 1,
-        "stats": {
-          "min_length": 11,
-          "max_length": 11,
-          "avg_length": 11.0
-        }
+        "unique_count": 2,
+        "stats": null
       },
-      "status": "mismatch",
-      "detail": "unique_count 1 != 2"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "postgresql",
@@ -747,15 +754,11 @@
         "data_type": "string",
         "total_count": 4,
         "null_count": 1,
-        "unique_count": 2,
-        "stats": {
-          "min_length": 10,
-          "max_length": 10,
-          "avg_length": 10.0
-        }
+        "unique_count": 3,
+        "stats": null
       },
-      "status": "mismatch",
-      "detail": "unique_count 2 != 3"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "postgresql",
@@ -822,11 +825,7 @@
         "total_count": 3,
         "null_count": 3,
         "unique_count": 0,
-        "stats": {
-          "min_length": 0,
-          "max_length": 0,
-          "avg_length": 0.0
-        }
+        "stats": null
       },
       "status": "ok",
       "detail": ""
@@ -879,8 +878,9 @@
           "variance": 0.3333,
           "median": 2.0,
           "mode": 2.0,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 34.64
+          "skewness": -1.7321,
+          "coefficient_of_variation": 34.64,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -914,8 +914,9 @@
           "variance": 1.1342745564031283e+38,
           "median": 9.223372036854776e+18,
           "mode": 9.223372036854776e+18,
-          "skewness": -0.3849,
-          "coefficient_of_variation": 346.41
+          "skewness": -1.7321,
+          "coefficient_of_variation": 346.41,
+          "is_approximate": false
         }
       },
       "reference_grades": {
@@ -956,7 +957,8 @@
           "std_dev": 0.7071,
           "variance": 0.5,
           "median": 2.0,
-          "coefficient_of_variation": 35.36
+          "coefficient_of_variation": 35.36,
+          "is_approximate": false
         }
       },
       "status": "ok",
@@ -1036,15 +1038,11 @@
         "data_type": "string",
         "total_count": 4,
         "null_count": 1,
-        "unique_count": 2,
-        "stats": {
-          "min_length": 10,
-          "max_length": 10,
-          "avg_length": 10.0
-        }
+        "unique_count": 3,
+        "stats": null
       },
-      "status": "mismatch",
-      "detail": "unique_count 2 != 3"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "sqlite",

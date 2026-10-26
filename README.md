@@ -51,38 +51,40 @@ precision, `f64` when it equals the true value rounded to the nearest f64, or
 arithmetic up to a relative `1e-9`. The Arrow values are checked against the
 same literals, which tells driver loss from dataprof loss.
 
-## Results (dataprof 0.12.0, ADBC 1.x, PostgreSQL 17, SQLite)
+## Results (dataprof 0.13.0, ADBC 1.x, PostgreSQL 17, SQLite)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
 Works: integer widths (distinct counts stay exact above 2^53),
 `real`/`double`, `numeric` (arrives as an opaque string extension and is typed
-`float`), `boolean`, `text`, `char(n)`, `date`, `timestamp`, `timestamptz`
+`float`), `boolean`, `text`, `char(n)`, `bytea`/`BLOB` and `uuid` distinct
+counts, `date`, `timestamp`, `timestamptz`
 (two spellings of one instant count as one value), `jsonb` (normalised by the
 server), all-null and empty results. Batch size changes no metric over 200,000
 rows of mixed types. A server error partway through the stream raises, with the
-driver message kept as the exception cause, so a failed read never becomes a
-smaller report.
+driver message in the exception text, so a failed read never becomes a smaller
+report.
 
 Memory is bounded ([results/memory.md](results/memory.md)). Profiling the
 driver's stream peaks at about 60 MiB over baseline from 1 to 16 million rows,
 with a unique `id` column, while draining the stream alone takes about 20 MiB
 and materializing an Arrow table first grows from 84 to 481 MiB. Profiling is
-about 3.7 times the drain time, so dataprof, not the driver, sets throughput
-(about 0.5 million rows per second for five columns on this machine).
+about 2.7 times the drain time at 16 million rows (3.7 times on 0.12.0), so
+dataprof, not the driver, sets throughput (about 0.65 million rows per second
+for five columns on this machine).
 
 Findings:
 
 | finding | where it belongs |
 |---|---|
-| 64-bit integer statistics go through f64: `int64` max is reported as 2^63, and clustered large values such as epoch nanoseconds report a variance of 0, or 33% off. Arrow carries the values exactly | dataprof#877 |
-| `numeric` beyond f64 has its extrema and mean rounded to the nearest f64; distinct counts stay exact | dataprof#877 |
-| `bytea`/`BLOB` distinct count is the number of distinct byte lengths | dataprof#645 |
-| PostgreSQL `uuid` arrives as opaque 16-byte binary, so every uuid column reports one distinct value | dataprof#645 |
+| 64-bit integer extrema, mean and median go through f64: `int64` max is reported as 2^63. Arrow carries the values exactly. Variance and standard deviation are exact since 0.13.0 (dataprof#957) | dataprof#1038 |
+| `numeric` beyond f64 has its extrema and mean rounded to the nearest f64; distinct counts stay exact | dataprof#1038 (decimals added in a comment) |
+| `bytea`/`BLOB` distinct count was the number of distinct byte lengths. Fixed in 0.13.0; the column is still typed `string` | fixed by dataprof#853; type in dataprof#645 |
+| PostgreSQL `uuid` arrives as opaque 16-byte binary, so every uuid column reported one distinct value. Fixed in 0.13.0; still typed `string` | fixed by dataprof#853; type in dataprof#645 |
 | `integer[]` and other lists are refused with a clear error | dataprof nested-type work; refusal is honest |
 | `''` and NaN count as null, while the database distinguishes them from `NULL` | documented policy; an opt-out would be dataprof#846 |
 | `time` and `interval` profile as `string` | no dataprof type for them; counts are right |
-| The top-level stream error reads `Arrow stream batch failed (error code 22)`; the useful text is only in `__cause__` | dataprof#876 |
+| The top-level stream error read `Arrow stream batch failed (error code 22)` with the useful text only in `__cause__`. Fixed in 0.13.0 | dataprof#876 |
 | SQLite driver formats `REAL` values with `%e` while inferring a string column, so `123456789.123` becomes `1.234568e+08`; later batches keep full text | apache/arrow-adbc#4862, repro in [upstream/](upstream/adbc-sqlite-double-to-string/) |
 
 ## Not yet measured

@@ -64,8 +64,8 @@ def test_server_error_mid_stream_raises():
     """
     with pytest.raises(Exception) as info:
         _profile(sql, {"adbc.postgresql.batch_size_hint_bytes": "4096"})
-    # 0.12 keeps the driver message as the cause; the top-level text is generic.
-    assert "division by zero" in str(info.value.__cause__).lower()
+    # Since 0.13 (dataprof#876) the top-level message carries the driver text.
+    assert "division by zero" in str(info.value).lower()
 
 
 def test_python_reader_error_mid_stream_raises():
@@ -77,4 +77,4 @@ def test_python_reader_error_mid_stream_raises():
 
     with pytest.raises(Exception) as info:
         dataprof.profile(pa.RecordBatchReader.from_batches(schema, batches()))
-    assert "connection reset" in str(info.value.__cause__)
+    assert "connection reset" in str(info.value)
