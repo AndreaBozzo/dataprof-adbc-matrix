@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 
+import adbc_driver_duckdb.dbapi as dd
 import adbc_driver_postgresql.dbapi as pg
 import adbc_driver_sqlite.dbapi as sq
 
@@ -16,6 +17,9 @@ PG_URI = os.environ.get(
 SMALL_BATCH_OPTIONS = {
     "sqlite": {"adbc.sqlite.query.batch_rows": "2"},
     "postgresql": {"adbc.postgresql.batch_size_hint_bytes": "1"},
+    # DuckDB accepts no statement option for this and emits 2048-row vectors,
+    # so its small-batch run repeats the default one (and the run says so).
+    "duckdb": {},
 }
 
 
@@ -24,6 +28,8 @@ def connect(backend: str):
         return sq.connect()
     if backend == "postgresql":
         return pg.connect(PG_URI)
+    if backend == "duckdb":
+        return dd.connect()  # in memory, one database per connection
     raise ValueError(f"unknown backend {backend!r}")
 
 

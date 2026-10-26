@@ -52,7 +52,7 @@ precision, `f64` when it equals the true value rounded to the nearest f64, or
 arithmetic up to a relative `1e-9`. The Arrow values are checked against the
 same literals, which tells driver loss from dataprof loss.
 
-## Results (dataprof 0.13.0, ADBC 1.x, PostgreSQL 17, SQLite)
+## Results (dataprof 0.13.0, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
@@ -61,7 +61,18 @@ Works: integer widths (distinct counts stay exact above 2^53),
 `float`), `boolean`, `text`, `char(n)`, `bytea`/`BLOB` and `uuid` distinct
 counts, `date`, `timestamp`, `timestamptz`
 (two spellings of one instant count as one value), `jsonb` (normalised by the
-server), all-null and empty results. Batch size changes no metric over 200,000
+server), all-null and empty results.
+
+DuckDB runs in process through the ADBC driver its Python package ships, so it
+needs no server. Its session settings change the Arrow layout of the same
+values, and dataprof reads each one alike: `string_view` (needs
+`produce_arrow_string_view` together with `arrow_output_version = '1.5'`),
+`large_string`, an `ENUM` as a dictionary, `UUID` as the `arrow.uuid`
+extension, and `HUGEINT` as `decimal128(38, 0)`. DuckDB accepts no batch-size
+option and emits 2048-row vectors, so its small-batch run repeats the default
+one, as the table marks.
+
+Batch size changes no metric over 200,000
 rows of mixed types. A server error partway through the stream raises, with the
 driver message in the exception text, so a failed read never becomes a smaller
 report.
@@ -86,8 +97,10 @@ Findings:
 | `''` and NaN count as null, while the database distinguishes them from `NULL` | documented policy; an opt-out would be dataprof#846 |
 | `time` and `interval` profile as `string` | no dataprof type for them; counts are right |
 | The top-level stream error read `Arrow stream batch failed (error code 22)` with the useful text only in `__cause__`. Fixed in 0.13.0 | dataprof#876 |
+| `LIST` and DuckDB's `ListView` layout are refused with the same clear error | dataprof nested-type work; refusal is honest |
+| DuckDB `UBIGINT` past the int64 range and `DECIMAL(18,3)` take extrema and mean through f64 | dataprof#1038 |
 | SQLite driver formats `REAL` values with `%e` while inferring a string column, so `123456789.123` becomes `1.234568e+08`; later batches keep full text | apache/arrow-adbc#4862, repro in [upstream/](upstream/adbc-sqlite-double-to-string/) |
 
 ## Not yet measured
 
-- Other drivers: DuckDB, Snowflake, BigQuery, Flight SQL.
+- Other drivers: Snowflake, BigQuery, Flight SQL.

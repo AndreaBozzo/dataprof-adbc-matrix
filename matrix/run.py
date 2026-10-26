@@ -1,6 +1,6 @@
 """Run every type case through ADBC into dataprof and write the matrix.
 
-Usage: uv run python -m matrix.run [--backend sqlite|postgresql]
+Usage: uv run python -m matrix.run [--backend duckdb|sqlite|postgresql]
 
 Each case runs twice, once with the driver's default batching and once with
 tiny batches, and the two serialized column profiles must be identical. The
@@ -35,6 +35,7 @@ PACKAGES = (
     "adbc-driver-manager",
     "adbc-driver-sqlite",
     "adbc-driver-postgresql",
+    "duckdb",
 )
 
 
@@ -56,7 +57,7 @@ def _profile_column(backend: str, case: Case, options: dict | None):
     sql = "SELECT v FROM t ORDER BY id"
     with connect(backend) as conn:
         with conn.cursor() as cur:
-            for stmt in _table_sql(backend, case):
+            for stmt in [*_table_sql(backend, case), *case.setup]:
                 cur.execute(stmt)
             conn.commit()
         with conn.cursor() as cur:

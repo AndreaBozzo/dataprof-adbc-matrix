@@ -7,14 +7,690 @@
       "pyarrow": "25.0.1",
       "adbc-driver-manager": "1.12.0",
       "adbc-driver-sqlite": "1.12.0",
-      "adbc-driver-postgresql": "1.12.0"
+      "adbc-driver-postgresql": "1.12.0",
+      "duckdb": "2.0.0"
     },
     "servers": {
+      "duckdb": "v2.0.0",
       "postgresql": "170011",
       "sqlite": "3.53.3"
     }
   },
   "rows": [
+    {
+      "backend": "duckdb",
+      "case": "INTEGER",
+      "sql_type": "INTEGER",
+      "note": "",
+      "arrow_type": "int32",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min": 1.0,
+          "max": 2.0,
+          "mean": 1.6667,
+          "std_dev": 0.5774,
+          "variance": 0.3333,
+          "median": 2.0,
+          "mode": 2.0,
+          "skewness": -1.7321,
+          "coefficient_of_variation": 34.64,
+          "is_approximate": false
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "BIGINT extremes",
+      "sql_type": "BIGINT",
+      "note": "int64 bounds; statistics graded against exact integer arithmetic.",
+      "arrow_type": "int64",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": -9.223372036854776e+18,
+          "max": 9.223372036854776e+18,
+          "mean": 3.0744573456182584e+18,
+          "std_dev": 1.0650232656628345e+19,
+          "variance": 1.1342745564031283e+38,
+          "median": 9.223372036854776e+18,
+          "mode": 9.223372036854776e+18,
+          "skewness": -1.7321,
+          "coefficient_of_variation": 346.41,
+          "is_approximate": false
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "mismatch",
+      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
+    },
+    {
+      "backend": "duckdb",
+      "case": "UBIGINT above int64",
+      "sql_type": "UBIGINT",
+      "note": "uint64 values past the int64 range.",
+      "arrow_type": "uint64",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": 1.0,
+          "max": 1.8446744073709552e+19,
+          "mean": 1.2297829382473034e+19,
+          "std_dev": 1.0650232656628345e+19,
+          "variance": 1.1342745564031283e+38,
+          "median": 1.8446744073709552e+19,
+          "mode": 1.8446744073709552e+19,
+          "skewness": -1.7321,
+          "coefficient_of_variation": 86.6,
+          "is_approximate": false
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "off"
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "mismatch",
+      "detail": "max 18446744073709551616 vs exact 18446744073709551615 (rel 5.4e-20) nearest f64; mean 12297829382473033728 vs exact 12297829382473034410 (rel 5.5e-17) nearest f64; median 18446744073709551616 vs exact 18446744073709551614 (rel 1.1e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821123713629000000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343399.6054 (rel 1.3e-16)"
+    },
+    {
+      "backend": "duckdb",
+      "case": "HUGEINT",
+      "sql_type": "HUGEINT",
+      "note": "128-bit integers; DuckDB's Arrow export decides their type.",
+      "arrow_type": "decimal128(38, 0)",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min": 1.0,
+          "max": 1.7014118346046923e+38,
+          "mean": 8.507059173023462e+37,
+          "std_dev": 1.2030798458400226e+38,
+          "variance": 1.4474011154664524e+76,
+          "median": 8.507059173023462e+37,
+          "coefficient_of_variation": 141.42,
+          "is_approximate": false
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "f64",
+        "std_dev": "f64"
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "mismatch",
+      "detail": "max 170141183460469231731687303700000000000 vs exact 170141183460469231731687303700000000000 (rel 5.9e-39) nearest f64; variance 14474011154664524427946373130000000000000000000000000000000000000000000000000 vs exact 14474011154664524427946373130000000000000000000000000000000000000000000000000 (rel 2.4e-38) nearest f64; std_dev 120307984584002263996540512300000000000 vs exact 120307984584002255772516886200000000000 (rel 6.8e-17) nearest f64"
+    },
+    {
+      "backend": "duckdb",
+      "case": "DECIMAL(18,3)",
+      "sql_type": "DECIMAL(18,3)",
+      "note": "18 significant digits, past what f64 holds.",
+      "arrow_type": "decimal128(18, 3)",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": {
+          "min": 0.001,
+          "max": 123456789012345.67,
+          "mean": 82304526008230.45,
+          "std_dev": 71277810369564.61,
+          "variance": 5.080526251079611e+27,
+          "median": 123456789012345.67,
+          "mode": 123456789012345.67,
+          "skewness": -1.7321,
+          "coefficient_of_variation": 86.6,
+          "is_approximate": false
+        }
+      },
+      "reference_grades": {
+        "min": "exact",
+        "max": "f64",
+        "mean": "f64",
+        "median": "f64",
+        "variance": "off",
+        "std_dev": "f64"
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "mismatch",
+      "detail": "max 123456789012345.6719 vs exact 123456789012345.678 (rel 4.9e-17) nearest f64; mean 82304526008230.4531 vs exact 82304526008230.452 (rel 1.3e-17) nearest f64; median 123456789012345.6719 vs exact 123456789012345.677 (rel 4.1e-17) nearest f64; variance 5080526251079611069742710784 vs exact 5080526251079612052532644243 (rel 1.9e-16); std_dev 71277810369564.6094 vs exact 71277810369564.6086 (rel 1.1e-17) nearest f64"
+    },
+    {
+      "backend": "duckdb",
+      "case": "DOUBLE",
+      "sql_type": "DOUBLE",
+      "note": "",
+      "arrow_type": "double",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "float",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min": 1.5,
+          "max": 2.5,
+          "mean": 2.0,
+          "std_dev": 0.7071,
+          "variance": 0.5,
+          "median": 2.0,
+          "coefficient_of_variation": 35.36,
+          "is_approximate": false
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "BOOLEAN",
+      "sql_type": "BOOLEAN",
+      "note": "",
+      "arrow_type": "bool",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "boolean",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "true_count": 2,
+          "false_count": 1,
+          "true_ratio": 0.6667
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "VARCHAR",
+      "sql_type": "VARCHAR",
+      "note": "Empty string counted as null.",
+      "arrow_type": "string",
+      "batches": {
+        "default": [
+          5
+        ],
+        "small": [
+          5
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 5,
+        "null_count": 2,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 1,
+          "max_length": 1,
+          "avg_length": 1.0
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "VARCHAR as Utf8View",
+      "sql_type": "VARCHAR",
+      "note": "string_view needs produce_arrow_string_view with arrow_output_version 1.5; either alone exports string, despite arrow_output_version's description.",
+      "arrow_type": "string_view",
+      "batches": {
+        "default": [
+          5
+        ],
+        "small": [
+          5
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 5,
+        "null_count": 2,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 1,
+          "max_length": 1,
+          "avg_length": 1.0
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "VARCHAR as large_string",
+      "sql_type": "VARCHAR",
+      "note": "arrow_large_buffer_size exports strings with 64-bit offsets.",
+      "arrow_type": "large_string",
+      "batches": {
+        "default": [
+          5
+        ],
+        "small": [
+          5
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 5,
+        "null_count": 2,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 1,
+          "max_length": 1,
+          "avg_length": 1.0
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "ENUM",
+      "sql_type": "ENUM('open', 'closed')",
+      "note": "Exported as a dictionary-encoded string column.",
+      "arrow_type": "dictionary<values=string, indices=uint8, ordered=0>",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 4,
+          "max_length": 6,
+          "avg_length": 4.6667
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "DATE",
+      "sql_type": "DATE",
+      "note": "",
+      "arrow_type": "date32[day]",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "date",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "TIMESTAMP",
+      "sql_type": "TIMESTAMP",
+      "note": "",
+      "arrow_type": "timestamp[us]",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "date",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "TIMESTAMPTZ same instant",
+      "sql_type": "TIMESTAMPTZ",
+      "note": "Both literals are the same instant.",
+      "arrow_type": "timestamp[us, tz=Europe/Rome]",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "date",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 1,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "TIME",
+      "sql_type": "TIME",
+      "note": "",
+      "arrow_type": "time64[us]",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 8,
+          "max_length": 8,
+          "avg_length": 8.0
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "INTERVAL",
+      "sql_type": "INTERVAL",
+      "note": "",
+      "arrow_type": "month_day_nano_interval",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 3,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 6,
+          "max_length": 7,
+          "avg_length": 6.5
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "UUID",
+      "sql_type": "UUID",
+      "note": "Default export, as a string.",
+      "arrow_type": "string",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": {
+          "min_length": 36,
+          "max_length": 36,
+          "avg_length": 36.0
+        }
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "UUID lossless",
+      "sql_type": "UUID",
+      "note": "arrow_lossless_conversion exports the arrow.uuid extension type.",
+      "arrow_type": "extension<arrow.uuid>",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 2,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "BLOB same length",
+      "sql_type": "BLOB",
+      "note": "Two distinct one-byte values.",
+      "arrow_type": "binary",
+      "batches": {
+        "default": [
+          4
+        ],
+        "small": [
+          4
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 4,
+        "null_count": 1,
+        "unique_count": 3,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "INTEGER[]",
+      "sql_type": "INTEGER[]",
+      "note": "",
+      "arrow_type": "list<l: int32>",
+      "batches": {
+        "default": [
+          3
+        ]
+      },
+      "status": "profile error",
+      "detail": "TypeError: Arrow stream column 'v' has unsupported nested type List(Int32, field: 'l'); select flat columns before exporting the stream"
+    },
+    {
+      "backend": "duckdb",
+      "case": "INTEGER[] as ListView",
+      "sql_type": "INTEGER[]",
+      "note": "arrow_output_list_view exports lists in the ListView layout, together with arrow_output_version 1.5.",
+      "arrow_type": "list_view<l: int32>",
+      "batches": {
+        "default": [
+          3
+        ]
+      },
+      "status": "profile error",
+      "detail": "TypeError: Arrow stream column 'v' has unsupported nested type ListView(Int32, field: 'l'); select flat columns before exporting the stream"
+    },
+    {
+      "backend": "duckdb",
+      "case": "all null",
+      "sql_type": "VARCHAR",
+      "note": "",
+      "arrow_type": "string",
+      "batches": {
+        "default": [
+          3
+        ],
+        "small": [
+          3
+        ]
+      },
+      "observed": {
+        "data_type": "string",
+        "total_count": 3,
+        "null_count": 3,
+        "unique_count": 0,
+        "stats": null
+      },
+      "batch_note": "small-batch run was not split, so it compares nothing",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "backend": "duckdb",
+      "case": "empty result",
+      "sql_type": "INTEGER",
+      "note": "",
+      "arrow_type": "int32",
+      "batches": {
+        "default": [],
+        "small": []
+      },
+      "observed": {
+        "data_type": "integer",
+        "total_count": 0,
+        "null_count": 0,
+        "unique_count": 0,
+        "stats": null
+      },
+      "status": "ok",
+      "detail": ""
+    },
     {
       "backend": "postgresql",
       "case": "smallint",

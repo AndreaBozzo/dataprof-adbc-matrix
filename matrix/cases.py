@@ -30,6 +30,9 @@ class Case:
     # the literals (see matrix/reference.py): "exact" for integer and
     # decimal columns, "float64" for columns that store f64.
     reference: str = ""
+    # Session statements run after the table is built, on the connection that
+    # reads it back: here, DuckDB settings that change its Arrow export.
+    setup: tuple[str, ...] = ()
 
 
 POSTGRES: list[Case] = [
@@ -329,4 +332,201 @@ SQLITE: list[Case] = [
     ),
 ]
 
-CASES = {"postgresql": POSTGRES, "sqlite": SQLITE}
+_TEXT = ["'a'", "'è'", "''", "NULL", "'a'"]
+_TEXT_EXPECT = {"data_type": ["string"], "null_count": 2, "unique_count": 2}
+_UUIDS = [
+    "'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'",
+    "'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'",
+    "'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'",
+    "NULL",
+]
+_UUID_EXPECT = {"null_count": 1, "unique_count": 2, "numeric_stats": False}
+
+DUCKDB: list[Case] = [
+    Case(
+        "INTEGER",
+        "INTEGER",
+        ["1", "2", "NULL", "2"],
+        {
+            "data_type": ["integer"],
+            "null_count": 1,
+            "unique_count": 2,
+            "min": 1.0,
+            "max": 2.0,
+        },
+    ),
+    Case(
+        "BIGINT extremes",
+        "BIGINT",
+        ["9223372036854775807", "-9223372036854775808", "9223372036854775806", "NULL"],
+        {"data_type": ["integer"]},
+        "int64 bounds; statistics graded against exact integer arithmetic.",
+        reference="exact",
+    ),
+    Case(
+        "UBIGINT above int64",
+        "UBIGINT",
+        ["18446744073709551615", "1", "18446744073709551614", "NULL"],
+        {"data_type": ["integer"]},
+        "uint64 values past the int64 range.",
+        reference="exact",
+    ),
+    Case(
+        "HUGEINT",
+        "HUGEINT",
+        ["170141183460469231731687303715884105727", "1", "NULL"],
+        {"null_count": 1, "unique_count": 2},
+        "128-bit integers; DuckDB's Arrow export decides their type.",
+        reference="exact",
+    ),
+    Case(
+        "DECIMAL(18,3)",
+        "DECIMAL(18,3)",
+        ["123456789012345.678", "0.001", "123456789012345.677", "NULL"],
+        {"data_type": ["float"]},
+        "18 significant digits, past what f64 holds.",
+        reference="exact",
+    ),
+    Case(
+        "DOUBLE",
+        "DOUBLE",
+        ["1.5", "2.5", "NULL"],
+        {
+            "data_type": ["float"],
+            "null_count": 1,
+            "unique_count": 2,
+            "min": 1.5,
+            "max": 2.5,
+        },
+    ),
+    Case(
+        "BOOLEAN",
+        "BOOLEAN",
+        ["true", "false", "true", "NULL"],
+        {
+            "data_type": ["boolean"],
+            "null_count": 1,
+            "unique_count": 2,
+            "numeric_stats": False,
+        },
+    ),
+    Case("VARCHAR", "VARCHAR", _TEXT, _TEXT_EXPECT, "Empty string counted as null."),
+    Case(
+        "VARCHAR as Utf8View",
+        "VARCHAR",
+        _TEXT,
+        _TEXT_EXPECT,
+        "string_view needs produce_arrow_string_view with arrow_output_version 1.5; "
+        "either alone exports string, despite arrow_output_version's description.",
+        setup=(
+            "SET arrow_output_version = '1.5'",
+            "SET produce_arrow_string_view = true",
+        ),
+    ),
+    Case(
+        "VARCHAR as large_string",
+        "VARCHAR",
+        _TEXT,
+        _TEXT_EXPECT,
+        "arrow_large_buffer_size exports strings with 64-bit offsets.",
+        setup=("SET arrow_large_buffer_size = true",),
+    ),
+    Case(
+        "ENUM",
+        "ENUM('open', 'closed')",
+        ["'open'", "'closed'", "'open'", "NULL"],
+        {"data_type": ["string"], "null_count": 1, "unique_count": 2},
+        "Exported as a dictionary-encoded string column.",
+    ),
+    Case(
+        "DATE",
+        "DATE",
+        ["'2026-01-01'", "'2026-01-02'", "NULL"],
+        {
+            "data_type": ["date"],
+            "null_count": 1,
+            "unique_count": 2,
+            "numeric_stats": False,
+        },
+    ),
+    Case(
+        "TIMESTAMP",
+        "TIMESTAMP",
+        ["'2026-01-01 10:00:00'", "'2026-01-01 11:00:00'", "NULL"],
+        {
+            "data_type": ["date"],
+            "null_count": 1,
+            "unique_count": 2,
+            "numeric_stats": False,
+        },
+    ),
+    Case(
+        "TIMESTAMPTZ same instant",
+        "TIMESTAMPTZ",
+        ["'2026-01-01 10:00:00+00'", "'2026-01-01 12:00:00+02'", "NULL"],
+        {
+            "data_type": ["date"],
+            "null_count": 1,
+            "unique_count": 1,
+            "numeric_stats": False,
+        },
+        "Both literals are the same instant.",
+    ),
+    Case(
+        "TIME",
+        "TIME",
+        ["'10:00:00'", "'11:30:00'", "NULL"],
+        {"null_count": 1, "unique_count": 2},
+    ),
+    Case(
+        "INTERVAL",
+        "INTERVAL",
+        ["INTERVAL 1 DAY", "INTERVAL 2 HOUR", "NULL"],
+        {"null_count": 1, "unique_count": 2},
+    ),
+    Case("UUID", "UUID", _UUIDS, _UUID_EXPECT, "Default export, as a string."),
+    Case(
+        "UUID lossless",
+        "UUID",
+        _UUIDS,
+        _UUID_EXPECT,
+        "arrow_lossless_conversion exports the arrow.uuid extension type.",
+        setup=("SET arrow_lossless_conversion = true",),
+    ),
+    Case(
+        "BLOB same length",
+        "BLOB",
+        ["'\\x00'::BLOB", "'\\x01'::BLOB", "'\\x02\\x03'::BLOB", "NULL"],
+        {"null_count": 1, "unique_count": 3, "numeric_stats": False},
+        "Two distinct one-byte values.",
+    ),
+    Case(
+        "INTEGER[]",
+        "INTEGER[]",
+        ["[1, 2]", "[3]", "NULL"],
+        {"null_count": 1, "unique_count": 2, "numeric_stats": False},
+    ),
+    Case(
+        "INTEGER[] as ListView",
+        "INTEGER[]",
+        ["[1, 2]", "[3]", "NULL"],
+        {"null_count": 1, "unique_count": 2, "numeric_stats": False},
+        "arrow_output_list_view exports lists in the ListView layout, together with "
+        "arrow_output_version 1.5.",
+        setup=("SET arrow_output_version = '1.5'", "SET arrow_output_list_view = true"),
+    ),
+    Case(
+        "all null",
+        "VARCHAR",
+        ["NULL", "NULL", "NULL"],
+        {"null_count": 3, "total_count": 3},
+    ),
+    Case(
+        "empty result",
+        "INTEGER",
+        [],
+        {"total_count": 0, "null_count": 0},
+    ),
+]
+
+CASES = {"duckdb": DUCKDB, "postgresql": POSTGRES, "sqlite": SQLITE}
