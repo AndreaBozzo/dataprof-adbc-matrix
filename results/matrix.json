@@ -3,7 +3,7 @@
     "python": "3.14.6",
     "platform": "Windows-11-10.0.26300-SP0",
     "packages": {
-      "dataprof": "0.13.0",
+      "dataprof": "0.13.1",
       "pyarrow": "25.0.1",
       "adbc-driver-manager": "1.12.0",
       "adbc-driver-sqlite": "1.12.0",

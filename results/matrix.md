@@ -1,7 +1,7 @@
-# ADBC matrix (dataprof 0.13.0)
+# ADBC matrix (dataprof 0.13.1)
 
 Python 3.14.6 on Windows-11-10.0.26300-SP0.  
-Packages: dataprof 0.13.0, pyarrow 25.0.1, adbc-driver-manager 1.12.0, adbc-driver-sqlite 1.12.0, adbc-driver-postgresql 1.12.0, duckdb 2.0.0.  
+Packages: dataprof 0.13.1, pyarrow 25.0.1, adbc-driver-manager 1.12.0, adbc-driver-sqlite 1.12.0, adbc-driver-postgresql 1.12.0, duckdb 2.0.0.  
 Servers: duckdb v2.0.0, postgresql 170011, sqlite 3.53.3.
 
 Batches: rows per batch the driver emitted, default run / small-batch run. Notes marked (*) are caveats on an `ok` row.

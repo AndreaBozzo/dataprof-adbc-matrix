@@ -81,9 +81,10 @@ Memory is bounded ([results/memory.md](results/memory.md)). Profiling the
 driver's stream peaks at about 60 MiB over baseline from 1 to 16 million rows,
 with a unique `id` column, while draining the stream alone takes about 20 MiB
 and materializing an Arrow table first grows from 84 to 481 MiB. Profiling is
-about 2.7 times the drain time at 16 million rows (3.7 times on 0.12.0), so
-dataprof, not the driver, sets throughput (about 0.65 million rows per second
-for five columns on this machine).
+about 2.8 times the drain time at 16 million rows (3.7 times on 0.12.0), so
+dataprof, not the driver, sets throughput (about 1.0 million rows per second
+for five columns on this machine in the 0.13.1 run, 0.65 in the 0.13.0 run;
+the drain sped up as much, so the difference is the machine's load).
 
 Findings:
 
