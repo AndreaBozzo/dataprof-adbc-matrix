@@ -52,7 +52,7 @@ precision, `f64` when it equals the true value rounded to the nearest f64, or
 arithmetic up to a relative `1e-9`. The Arrow values are checked against the
 same literals, which tells driver loss from dataprof loss.
 
-## Results (dataprof 0.13.0, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
+## Results (dataprof 0.13.1, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
