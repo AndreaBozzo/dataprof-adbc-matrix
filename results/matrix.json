@@ -3,7 +3,7 @@
     "python": "3.14.6",
     "platform": "Windows-11-10.0.26300-SP0",
     "packages": {
-      "dataprof": "0.13.1",
+      "dataprof": "0.14.0",
       "pyarrow": "25.0.1",
       "adbc-driver-manager": "1.12.0",
       "adbc-driver-sqlite": "1.12.0",
@@ -46,7 +46,13 @@
           "mode": 2.0,
           "skewness": -1.7321,
           "coefficient_of_variation": 34.64,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "1",
+            "max": "2",
+            "median": "2",
+            "mode": "2"
+          }
         }
       },
       "batch_note": "small-batch run was not split, so it compares nothing",
@@ -75,27 +81,31 @@
         "stats": {
           "min": -9.223372036854776e+18,
           "max": 9.223372036854776e+18,
-          "mean": 3.0744573456182584e+18,
-          "std_dev": 1.0650232656628345e+19,
-          "variance": 1.1342745564031283e+38,
+          "mean": 3.07445734562e+18,
+          "std_dev": 1.06502326566e+19,
+          "variance": 1.1342745564e+38,
           "median": 9.223372036854776e+18,
-          "mode": 9.223372036854776e+18,
           "skewness": -1.7321,
           "coefficient_of_variation": 346.41,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "-9223372036854775808",
+            "max": "9223372036854775807",
+            "median": "9223372036854775806"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "batch_note": "small-batch run was not split, so it compares nothing",
-      "status": "mismatch",
-      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "duckdb",
@@ -119,27 +129,31 @@
         "stats": {
           "min": 1.0,
           "max": 1.8446744073709552e+19,
-          "mean": 1.2297829382473034e+19,
-          "std_dev": 1.0650232656628345e+19,
-          "variance": 1.1342745564031283e+38,
+          "mean": 1.22978293825e+19,
+          "std_dev": 1.06502326566e+19,
+          "variance": 1.1342745564e+38,
           "median": 1.8446744073709552e+19,
-          "mode": 1.8446744073709552e+19,
           "skewness": -1.7321,
           "coefficient_of_variation": 86.6,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "1",
+            "max": "18446744073709551615",
+            "median": "18446744073709551614"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "batch_note": "small-batch run was not split, so it compares nothing",
-      "status": "mismatch",
-      "detail": "max 18446744073709551616 vs exact 18446744073709551615 (rel 5.4e-20) nearest f64; mean 12297829382473033728 vs exact 12297829382473034410 (rel 5.5e-17) nearest f64; median 18446744073709551616 vs exact 18446744073709551614 (rel 1.1e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821123713629000000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343399.6054 (rel 1.3e-16)"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "duckdb",
@@ -163,25 +177,30 @@
         "stats": {
           "min": 1.0,
           "max": 1.7014118346046923e+38,
-          "mean": 8.507059173023462e+37,
-          "std_dev": 1.2030798458400226e+38,
-          "variance": 1.4474011154664524e+76,
+          "mean": 8.50705917302e+37,
+          "std_dev": 1.20307984584e+38,
+          "variance": 1.44740111547e+76,
           "median": 8.507059173023462e+37,
           "coefficient_of_variation": 141.42,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "1",
+            "max": "170141183460469231731687303715884105727",
+            "median": "85070591730234615865843651857942052864"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
+        "max": "exact",
         "mean": "exact",
         "median": "exact",
-        "variance": "f64",
-        "std_dev": "f64"
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "batch_note": "small-batch run was not split, so it compares nothing",
-      "status": "mismatch",
-      "detail": "max 170141183460469231731687303700000000000 vs exact 170141183460469231731687303700000000000 (rel 5.9e-39) nearest f64; variance 14474011154664524427946373130000000000000000000000000000000000000000000000000 vs exact 14474011154664524427946373130000000000000000000000000000000000000000000000000 (rel 2.4e-38) nearest f64; std_dev 120307984584002263996540512300000000000 vs exact 120307984584002255772516886200000000000 (rel 6.8e-17) nearest f64"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "duckdb",
@@ -205,27 +224,31 @@
         "stats": {
           "min": 0.001,
           "max": 123456789012345.67,
-          "mean": 82304526008230.45,
-          "std_dev": 71277810369564.61,
-          "variance": 5.080526251079611e+27,
+          "mean": 82304526008200.0,
+          "std_dev": 71277810369600.0,
+          "variance": 5.08052625108e+27,
           "median": 123456789012345.67,
-          "mode": 123456789012345.67,
           "skewness": -1.7321,
           "coefficient_of_variation": 86.6,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "0.001",
+            "max": "123456789012345.678",
+            "median": "123456789012345.677"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
-        "variance": "off",
-        "std_dev": "f64"
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "batch_note": "small-batch run was not split, so it compares nothing",
-      "status": "mismatch",
-      "detail": "max 123456789012345.6719 vs exact 123456789012345.678 (rel 4.9e-17) nearest f64; mean 82304526008230.4531 vs exact 82304526008230.452 (rel 1.3e-17) nearest f64; median 123456789012345.6719 vs exact 123456789012345.677 (rel 4.1e-17) nearest f64; variance 5080526251079611069742710784 vs exact 5080526251079612052532644243 (rel 1.9e-16); std_dev 71277810369564.6094 vs exact 71277810369564.6086 (rel 1.1e-17) nearest f64"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "duckdb",
@@ -719,7 +742,7 @@
           "max": 2.0,
           "mean": -8190.75,
           "std_dev": 16384.8333,
-          "variance": 268462763.5833,
+          "variance": 268462763.583,
           "median": 1.5,
           "mode": 2.0,
           "skewness": -2.0,
@@ -732,7 +755,16 @@
             "iqr": 8193.25
           },
           "is_approximate": false,
-          "outlier_count": 1
+          "outlier_count": 1,
+          "exact": {
+            "min": "-32768",
+            "max": "2",
+            "median": "1.5",
+            "q1": "-8191.25",
+            "q2": "1.5",
+            "q3": "2",
+            "mode": "2"
+          }
         }
       },
       "status": "ok",
@@ -767,7 +799,12 @@
           "variance": 50.0,
           "median": 15.0,
           "coefficient_of_variation": 47.14,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "10",
+            "max": "20",
+            "median": "15"
+          }
         }
       },
       "status": "ok",
@@ -797,25 +834,29 @@
         "stats": {
           "min": 9007199254740992.0,
           "max": 9007199254740992.0,
-          "mean": 9007199254740992.0,
+          "mean": 9007199254740000.0,
           "std_dev": 0.7071,
           "variance": 0.5,
           "median": 9007199254740992.0,
-          "mode": 9007199254740992.0,
           "coefficient_of_variation": 0.0,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "9007199254740992",
+            "max": "9007199254740993",
+            "median": "9007199254740992.5"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
         "variance": "exact",
         "std_dev": "exact"
       },
-      "status": "mismatch",
-      "detail": "max 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; mean 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64; median 9007199254740992 vs exact 9007199254740992.5 (rel 5.6e-17) nearest f64"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "postgresql",
@@ -880,26 +921,30 @@
         "stats": {
           "min": -9.223372036854776e+18,
           "max": 9.223372036854776e+18,
-          "mean": 3.0744573456182584e+18,
-          "std_dev": 1.0650232656628345e+19,
-          "variance": 1.1342745564031283e+38,
+          "mean": 3.07445734562e+18,
+          "std_dev": 1.06502326566e+19,
+          "variance": 1.1342745564e+38,
           "median": 9.223372036854776e+18,
-          "mode": 9.223372036854776e+18,
           "skewness": -1.7321,
           "coefficient_of_variation": 346.41,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "-9223372036854775808",
+            "max": "9223372036854775807",
+            "median": "9223372036854775806"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
       },
-      "status": "mismatch",
-      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "postgresql",
@@ -925,26 +970,30 @@
         "stats": {
           "min": 9007199254740992.0,
           "max": 9007199254740996.0,
-          "mean": 9007199254740994.0,
+          "mean": 9007199254740000.0,
           "std_dev": 2.0,
           "variance": 4.0,
           "median": 9007199254740996.0,
-          "mode": 9007199254740996.0,
           "skewness": 0.0,
           "coefficient_of_variation": 0.0,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "9007199254740993",
+            "max": "9007199254740997",
+            "median": "9007199254740995"
+          }
         }
       },
       "reference_grades": {
-        "min": "f64",
-        "max": "f64",
-        "mean": "off",
-        "median": "f64",
+        "min": "exact",
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
         "variance": "exact",
         "std_dev": "exact"
       },
-      "status": "mismatch",
-      "detail": "min 9007199254740992 vs exact 9007199254740993 (rel 1.1e-16) nearest f64; max 9007199254740996 vs exact 9007199254740997 (rel 1.1e-16) nearest f64; mean 9007199254740994 vs exact 9007199254740995 (rel 1.1e-16); median 9007199254740996 vs exact 9007199254740995 (rel 1.1e-16) nearest f64"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "postgresql",
@@ -971,11 +1020,10 @@
         "stats": {
           "min": 0.01,
           "max": 1e+20,
-          "mean": 6.666666666666666e+19,
-          "std_dev": 5.773502691896258e+19,
-          "variance": 3.3333333333333336e+39,
+          "mean": 6.66666666667e+19,
+          "std_dev": 5.7735026919e+19,
+          "variance": 3.33333333333e+39,
           "median": 1e+20,
-          "mode": 1e+20,
           "skewness": -1.7321,
           "coefficient_of_variation": 86.6,
           "is_approximate": false
@@ -984,13 +1032,13 @@
       "reference_grades": {
         "min": "exact",
         "max": "f64",
-        "mean": "f64",
+        "mean": "exact",
         "median": "f64",
-        "variance": "off",
-        "std_dev": "f64"
+        "variance": "exact",
+        "std_dev": "exact"
       },
       "status": "mismatch",
-      "detail": "max 100000000000000000000 vs exact 99999999999999999999.99 (rel 1.0e-22) nearest f64; mean 66666666666666663936 vs exact 66666666666666666666.66 (rel 4.1e-17) nearest f64; median 100000000000000000000 vs exact 99999999999999999999.98 (rel 2.0e-22) nearest f64; variance 3333333333333333636082979411000000000000 vs exact 3333333333333333333331666667000000000000 (rel 9.1e-17); std_dev 57735026918962577408 vs exact 57735026918962576450.9004 (rel 1.7e-17) nearest f64"
+      "detail": "max 100000000000000000000 vs exact 99999999999999999999.99 (rel 1.0e-22) nearest f64; median 100000000000000000000 vs exact 99999999999999999999.98 (rel 2.0e-22) nearest f64"
     },
     {
       "backend": "postgresql",
@@ -1020,7 +1068,6 @@
           "std_dev": 0.5774,
           "variance": 0.3333,
           "median": 1.0,
-          "mode": 1.0,
           "skewness": -1.7321,
           "coefficient_of_variation": 86.6,
           "is_approximate": false
@@ -1061,7 +1108,7 @@
         "stats": {
           "min": -1e+308,
           "max": 1e+308,
-          "mean": 3.333333333333333e+307,
+          "mean": 3.33333333333e+307,
           "std_dev": null,
           "variance": null,
           "median": 1e+308,
@@ -1072,7 +1119,7 @@
       "reference_grades": {
         "min": "exact",
         "max": "exact",
-        "mean": "f64",
+        "mean": "exact",
         "median": "exact",
         "variance": "f64",
         "std_dev": "documented"
@@ -1556,7 +1603,13 @@
           "mode": 2.0,
           "skewness": -1.7321,
           "coefficient_of_variation": 34.64,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "1",
+            "max": "2",
+            "median": "2",
+            "mode": "2"
+          }
         }
       },
       "status": "ok",
@@ -1585,26 +1638,30 @@
         "stats": {
           "min": -9.223372036854776e+18,
           "max": 9.223372036854776e+18,
-          "mean": 3.0744573456182584e+18,
-          "std_dev": 1.0650232656628345e+19,
-          "variance": 1.1342745564031283e+38,
+          "mean": 3.07445734562e+18,
+          "std_dev": 1.06502326566e+19,
+          "variance": 1.1342745564e+38,
           "median": 9.223372036854776e+18,
-          "mode": 9.223372036854776e+18,
           "skewness": -1.7321,
           "coefficient_of_variation": 346.41,
-          "is_approximate": false
+          "is_approximate": false,
+          "exact": {
+            "min": "-9223372036854775808",
+            "max": "9223372036854775807",
+            "median": "9223372036854775806"
+          }
         }
       },
       "reference_grades": {
         "min": "exact",
-        "max": "f64",
-        "mean": "f64",
-        "median": "f64",
-        "variance": "off",
-        "std_dev": "off"
+        "max": "exact",
+        "mean": "exact",
+        "median": "exact",
+        "variance": "exact",
+        "std_dev": "exact"
       },
-      "status": "mismatch",
-      "detail": "max 9223372036854775808 vs exact 9223372036854775807 (rel 1.1e-19) nearest f64; mean 3074457345618258432 vs exact 3074457345618258601.6667 (rel 5.5e-17) nearest f64; median 9223372036854775808 vs exact 9223372036854775806 (rel 2.2e-19) nearest f64; variance 113427455640312833747435490100000000000 vs exact 113427455640312821136011458400000000000 (rel 1.1e-16); std_dev 10650232656628344832 vs exact 10650232656628343400.1827 (rel 1.3e-16)"
+      "status": "ok",
+      "detail": ""
     },
     {
       "backend": "sqlite",

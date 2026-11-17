@@ -3,7 +3,7 @@
     "python": "3.14.6",
     "platform": "Windows-11-10.0.26300-SP0",
     "packages": {
-      "dataprof": "0.13.1",
+      "dataprof": "0.14.0",
       "pyarrow": "25.0.1",
       "adbc-driver-manager": "1.12.0",
       "adbc-driver-sqlite": "1.12.0",
@@ -16,73 +16,73 @@
       "rows": 1000000,
       "mode": "drain",
       "batches": 3,
-      "baseline_mib": 51.2,
+      "baseline_mib": 51.4,
       "peak_over_baseline_mib": 19.1,
-      "seconds": 0.46
+      "seconds": 0.75
     },
     {
       "rows": 1000000,
       "mode": "profile",
       "batches": null,
-      "baseline_mib": 51.1,
-      "peak_over_baseline_mib": 64.8,
-      "seconds": 1.17
+      "baseline_mib": 51.7,
+      "peak_over_baseline_mib": 64.7,
+      "seconds": 3.42
     },
     {
       "rows": 1000000,
       "mode": "table",
       "batches": 3,
-      "baseline_mib": 51.1,
-      "peak_over_baseline_mib": 83.9,
-      "seconds": 1.2
+      "baseline_mib": 51.7,
+      "peak_over_baseline_mib": 84.1,
+      "seconds": 3.53
     },
     {
       "rows": 4000000,
       "mode": "drain",
       "batches": 11,
-      "baseline_mib": 51.1,
-      "peak_over_baseline_mib": 20.4,
-      "seconds": 1.66
+      "baseline_mib": 51.4,
+      "peak_over_baseline_mib": 19.9,
+      "seconds": 2.98
     },
     {
       "rows": 4000000,
       "mode": "profile",
       "batches": null,
-      "baseline_mib": 51.2,
-      "peak_over_baseline_mib": 58.0,
-      "seconds": 3.96
+      "baseline_mib": 51.4,
+      "peak_over_baseline_mib": 57.9,
+      "seconds": 11.06
     },
     {
       "rows": 4000000,
       "mode": "table",
       "batches": 11,
-      "baseline_mib": 51.3,
-      "peak_over_baseline_mib": 155.8,
-      "seconds": 5.1
+      "baseline_mib": 51.6,
+      "peak_over_baseline_mib": 155.5,
+      "seconds": 12.81
     },
     {
       "rows": 16000000,
       "mode": "drain",
       "batches": 44,
-      "baseline_mib": 51.2,
-      "peak_over_baseline_mib": 20.5,
-      "seconds": 5.86
+      "baseline_mib": 51.3,
+      "peak_over_baseline_mib": 20.7,
+      "seconds": 10.23
     },
     {
       "rows": 16000000,
       "mode": "profile",
       "batches": null,
-      "baseline_mib": 51.2,
-      "peak_over_baseline_mib": 58.1,
-      "seconds": 16.31
+      "baseline_mib": 51.4,
+      "peak_over_baseline_mib": 58.2,
+      "seconds": 34.35
     },
     {
       "rows": 16000000,
       "mode": "table",
       "batches": 44,
       "baseline_mib": 51.3,
-      "peak_over_baseline_mib": 481.4,
-      "seconds": 21.48
+      "peak_over_baseline_mib": 480.8,
+      "seconds": 33.46
     }
   ]
 }

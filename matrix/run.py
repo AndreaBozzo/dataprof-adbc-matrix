@@ -119,9 +119,15 @@ def _check_reference(row: dict, case: Case, batches: list, col: dict) -> list[st
     exact_stats = reference.statistics(present)
     # Documented: std_dev is null whenever the variance overflows f64.
     variance_overflows = not reference.fits_f64(exact_stats["variance"])
+    # An integer or decimal column reports its order statistics exactly under
+    # stats.exact; its plain fields are then the documented nearest f64.
+    exact_fields = stats.get("exact") or {}
     for name, exact in exact_stats.items():
         null_ok = name == "std_dev" and variance_overflows
-        grade, detail, rel = reference.grade(name, exact, stats.get(name), null_ok)
+        if name in reference.EXACT_FIELDS and name in exact_fields:
+            grade, detail, rel = reference.grade_exact(name, exact, exact_fields[name])
+        else:
+            grade, detail, rel = reference.grade(name, exact, stats.get(name), null_ok)
         grades[name] = grade
         if not detail:
             continue

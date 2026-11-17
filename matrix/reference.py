@@ -21,8 +21,14 @@ from fractions import Fraction
 import pyarrow as pa
 
 # dataprof serializes statistics and extrema to 4 decimal places, ties away
-# from zero (docs/schema/README.md, numeric equality contract).
+# from zero, and since 0.14.0 moment statistics keep at most 12 significant
+# digits of the stored float (docs/schema/README.md, numeric equality contract).
 QUANTUM = Decimal("0.0001")
+MOMENTS = ("mean", "variance", "std_dev")
+MOMENT_DIGITS = 12
+# Order statistics an integer or decimal column also reports exactly, as
+# decimal strings under ``stats.exact`` (dataprof 0.14.0, #1038).
+EXACT_FIELDS = ("min", "max", "median")
 # Enough digits to hold any finite f64 to 4 decimal places.
 PREC = 400
 STATS = ("min", "max", "mean", "median", "variance", "std_dev")
@@ -78,8 +84,19 @@ def _quantize(d: Decimal) -> Decimal:
         return d.quantize(QUANTUM, rounding=ROUND_HALF_UP)
 
 
-def _serialized(x: Fraction) -> Decimal:
-    return _quantize(_to_decimal(x))
+def _serialized(x: Fraction, name: str = "") -> Decimal:
+    """``x`` as dataprof serializes the statistic ``name``.
+
+    A moment above 1e8 keeps 12 significant digits, and the serialized number
+    is the float nearest that decimal, so it is compared through that float.
+    """
+    d = _quantize(_to_decimal(x))
+    if name in MOMENTS and d and d.adjusted() >= MOMENT_DIGITS - 4:
+        with localcontext() as ctx:
+            ctx.prec = MOMENT_DIGITS
+            ctx.rounding = ROUND_HALF_UP
+            d = _quantize(Decimal(float(+d)))
+    return d
 
 
 def fits_f64(x: Fraction) -> bool:
@@ -110,14 +127,29 @@ def grade(
             return "documented", "", 0.0
         return "off", f"{name} absent (exact {_to_decimal(exact):.20g})", 1.0
     obs = _quantize(Decimal(observed))
-    if obs == _serialized(exact):
+    if obs == _serialized(exact, name):
         return "exact", "", 0.0
-    detail = f"{name} {obs.normalize():f} vs exact {_serialized(exact).normalize():f}"
+    detail = (
+        f"{name} {obs.normalize():f} vs exact {_serialized(exact, name).normalize():f}"
+    )
     rel = float(abs(Fraction(obs) - exact) / abs(exact)) if exact else 1.0
     detail += f" (rel {rel:.1e})"
-    if near is not None and obs == _serialized(near):
+    if near is not None and obs == _serialized(near, name):
         return "f64", detail + " nearest f64", rel
     return "off", detail, rel
+
+
+def grade_exact(name: str, exact: Fraction, observed: str) -> tuple[str, str, float]:
+    """Grade an order statistic dataprof reports exactly, as a decimal string."""
+    obs = Fraction(Decimal(observed))
+    if obs == exact:
+        return "exact", "", 0.0
+    rel = float(abs(obs - exact) / abs(exact)) if exact else 1.0
+    return (
+        "off",
+        f"exact.{name} {observed} vs exact {_to_decimal(exact):f} (rel {rel:.1e})",
+        rel,
+    )
 
 
 def arrow_values(batches: list[pa.RecordBatch]) -> list:

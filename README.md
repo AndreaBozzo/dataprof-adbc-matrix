@@ -48,11 +48,14 @@ Numeric cases with a `reference` are graded against exact rational arithmetic on
 the inserted literals ([matrix/reference.py](matrix/reference.py)), never against
 the database or Arrow. Each statistic is `exact` at dataprof's serialized
 precision, `f64` when it equals the true value rounded to the nearest f64, or
-`off`. Integer and decimal columns must be exact; f64 columns may differ by f64
+`off`. Since dataprof 0.14.0 that precision is 4 decimal places, with moment
+statistics kept to 12 significant digits, and an integer or decimal column's
+`min`, `max` and `median` are graded from the exact strings in `stats.exact`.
+Integer and decimal columns must be exact; f64 columns may differ by f64
 arithmetic up to a relative `1e-9`. The Arrow values are checked against the
 same literals, which tells driver loss from dataprof loss.
 
-## Results (dataprof 0.13.1, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
+## Results (dataprof 0.14.0, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
@@ -81,17 +84,18 @@ Memory is bounded ([results/memory.md](results/memory.md)). Profiling the
 driver's stream peaks at about 60 MiB over baseline from 1 to 16 million rows,
 with a unique `id` column, while draining the stream alone takes about 20 MiB
 and materializing an Arrow table first grows from 84 to 481 MiB. Profiling is
-about 2.8 times the drain time at 16 million rows (3.7 times on 0.12.0), so
-dataprof, not the driver, sets throughput (about 1.0 million rows per second
-for five columns on this machine in the 0.13.1 run, 0.65 in the 0.13.0 run;
-the drain sped up as much, so the difference is the machine's load).
+about 3.4 times the drain time at 16 million rows in the 0.14.0 run (2.8 on
+0.13.1, 3.7 on 0.12.0), so dataprof, not the driver, sets throughput. Run back
+to back on the same machine at 4 million rows, 0.14.0 profiles the stream in
+7.9 seconds against 6.95 for 0.13.1 (mean of three, about 14% slower) with the
+same peak memory; absolute times across runs move with the machine's load.
 
 Findings:
 
 | finding | where it belongs |
 |---|---|
-| 64-bit integer extrema, mean and median go through f64: `int64` max is reported as 2^63. Arrow carries the values exactly. Variance and standard deviation are exact since 0.13.0 (dataprof#957) | dataprof#1038 |
-| `numeric` beyond f64 has its extrema and mean rounded to the nearest f64; distinct counts stay exact | dataprof#1038 (decimals added in a comment) |
+| 64-bit integer extrema, mean and median went through f64: `int64` max was reported as 2^63. Fixed in 0.14.0: `stats.exact` carries exact order statistics, and every integer and `decimal128` case grades exact (variance and standard deviation since 0.13.0, dataprof#957) | fixed by dataprof#1038 |
+| PostgreSQL `numeric` arrives as an `arrow.opaque` string extension and is typed `float`, so beyond f64 its `max` and `median` are the nearest f64 and it has no `stats.exact`. Mean and spread are exact since 0.14.0; distinct counts stay exact | dataprof: read the opaque `numeric` extension as a declared decimal (not filed yet) |
 | `bytea`/`BLOB` distinct count was the number of distinct byte lengths. Fixed in 0.13.0; the column is still typed `string` | fixed by dataprof#853; type in dataprof#645 |
 | PostgreSQL `uuid` arrives as opaque 16-byte binary, so every uuid column reported one distinct value. Fixed in 0.13.0; still typed `string` | fixed by dataprof#853; type in dataprof#645 |
 | `integer[]` and other lists are refused with a clear error | dataprof nested-type work; refusal is honest |
