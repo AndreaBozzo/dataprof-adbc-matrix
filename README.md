@@ -55,7 +55,7 @@ Integer and decimal columns must be exact; f64 columns may differ by f64
 arithmetic up to a relative `1e-9`. The Arrow values are checked against the
 same literals, which tells driver loss from dataprof loss.
 
-## Results (dataprof 0.14.0, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
+## Results (dataprof 0.14.1, ADBC 1.x, PostgreSQL 17, SQLite, DuckDB)
 
 See [results/matrix.md](results/matrix.md) for the full table.
 
